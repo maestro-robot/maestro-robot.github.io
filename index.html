@@ -3,10 +3,10 @@
 <head>
   <meta charset="utf-8">
   <meta name="description"
-        content="Points2Reward: Robotic Manipulation Rewards from Just One Video">
+        content="Maestro: Orchestrating Robotics Modules with Vision-Language Models for Zero-Shot Generalist Robots">
   <meta name="keywords" content="reward generation, point tracking, robotics, learning from human videos">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Points2Reward: Robotic Manipulation Rewards from Just One Video</title>
+  <title>Maestro: Orchestrating Robotics Modules with Vision-Language Models for Zero-Shot Generalist Robots</title>
 
   <!-- Global site tag (gtag.js) - Google Analytics -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-PYVRSFMDRL"></script>
@@ -81,6 +81,146 @@
 
   </div>
 </nav> -->
+
+
+<section class="hero">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column has-text-centered">
+          <h1 class="title is-1 publication-title">Maestro: Orchestrating Robotics Modules with Vision-Language Models for Zero-Shot Generalist Robots</h1>
+          
+          <!-- Authors -->
+          <div class="is-size-4 publication-authors">
+            <span class="author-block">
+              Anonymous Submission
+            </span>
+          </div>
+          
+
+          <!-- Affiliations -->
+          <!-- <div class="is-size-4 publication-authors">
+            <span class="author-block">University of Pennsylvania</span>
+          </div>
+          <div class="is-size-4 publication-authors">
+            <span class="author-block">Under Review</span>
+          </div> -->
+          <!-- <div class="is-size-5 publication-authors">
+            <span class="author-block">Also <strong>Oral Spotlight</strong>✨ at <a href="https://rss-hardware-intelligence.github.io/" target="_blank">RSS Workshop on Robot Hardware-Aware Intelligence</a>, 2025</span>
+          </div> -->
+          
+
+          <!-- <div class="column has-text-centered"> -->
+            <!-- <div class="publication-links"> -->
+              <!-- PDF Link. -->
+              <!-- <span class="link-block">
+                <a href="https://points2reward.github.io/static/Points2Reward.pdf"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fas fa-file-pdf"></i>
+                  </span>
+                  <span>Paper</span>
+                </a>
+              </span> -->
+              <!-- arXiv Link. -->
+              <!-- <span class="link-block">
+                <a href="https://points2reward.github.io"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="ai ai-arxiv"></i>
+                  </span>
+                  <span>arXiv (Coming Soon)</span>
+                </a>
+              </span> -->
+              <!-- Video Link. -->
+              <!-- <span class="link-block">
+                <a href="https://www.youtube.com/watch?v=MrKrnHhk8IA"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fab fa-youtube"></i>
+                  </span>
+                  <span>Video</span>
+                </a>
+              </span> -->
+              <!-- Code Link. -->
+              <!-- <span class="link-block">
+                <a href="https://points2reward.github.io"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fab fa-github"></i>
+                  </span>
+                  <span>Code (Coming Soon)</span>
+                  </a>
+              </span> -->
+              <!-- Dataset Link. -->
+              <!-- <span class="link-block">
+                <a href="https://github.com/google/nerfies/releases/tag/0.1"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="far fa-images"></i>
+                  </span>
+                  <span>Data</span>
+                  </a>
+              </span> -->
+            <!-- </div> -->
+          <!-- </div> -->
+        <!-- </div> -->
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <!-- Overview. -->
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-full-width">
+        <h2 class="title is-3">Overview of Maestro</h2>
+        <figure class="image">
+          <img src="./static/images/concept_figure.jpg">
+        </figure>
+        <br>
+        <div class="content has-text-justified">
+          <p>
+            <!-- <strong>Points2Reward</strong> takes a demonstration video and a rollout video as input. We use semantic point correspondence and off-the-shelf point tracking to generate matching point -->
+            <!-- tracks of the demonstration and rollout video. We then use the two point tracks to compute a goal-based reward. -->
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <!-- Abstract. -->
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Abstract</h2>
+        <div class="content has-text-justified">
+          <p>
+            Today's best-explored routes towards generalist robots center on collecting ever larger "observations-in actions-out" robotics datasets to train large end-to-end models, copying a recipe that has worked for vision-language models (VLMs). We pursue a road less traveled: building generalist policies directly around VLMs by augmenting their general capabilities with specific robot capabilities encapsulated in a carefully curated set of perception, planning, and control modules. In Maestro, a VLM coding agent dynamically composes these modules into a programmatic policy for the current task and scenario. Maestro's architecture benefits from a streamlined closed-loop interface without many manually imposed structural constraints, and a comprehensive and diverse tool repertoire. As a result, it largely surpasses today's VLA models for zero-shot performance on challenging manipulation skills. Further, Maestro is easily extensible to incorporate new modules, easily editable to suit new embodiments such as a quadruped-mounted arm, and even easily adapts from minimal real-world experiences through local code edits.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <!-- Method. -->
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-full-width">
+        <h2 class="title is-3">Method</h2>
+        <figure class="image">
+          <img src="./static/images/maestro_method.png">
+        </figure>
+      </div>
+    </div>
+  </div>
+</section>
 
 
 
