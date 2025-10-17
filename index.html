@@ -96,16 +96,16 @@
               <a href="https://junyaoshi.github.io/" target="_blank">Junyao Shi</a>*,
             </span>
             <span class="author-block">
-              <a href="https://www.linkedin.com/in/rujia-yang-810415356/" target="_blank">Rujia Yang</a>*,
+              <a href="https://www.linkedin.com/in/rujia-yang-810415356/" target="_blank">Rujia Yang</a>*🦾,
             </span>
             <span class="author-block">
-              <a href="https://beethoven-q.github.io/kaitianchao/" target="_blank">Kaitian Chao</a>*,
+              <a href="https://beethoven-q.github.io/kaitianchao/" target="_blank">Kaitian Chao</a>*🦾,
             </span>
             <span class="author-block">
-              <a href="https://selina22.github.io/" target="_blank">Bingqing Wan</a>,
+              <a href="https://selina22.github.io/" target="_blank">Selina Wan</a>🐶,
             </span>
             <span class="author-block">
-              <a href="https://scholar.google.com/citations?user=MpdsJF0AAAAJ&hl=en" target="_blank">Yifei Shao</a>,
+              <a href="https://scholar.google.com/citations?user=MpdsJF0AAAAJ&hl=en" target="_blank">Yifei Shao</a>🐶,
             </span>
             <span class="author-block">
               <a href="https://jiahuilei.com/" target="_blank">Jiahui Lei</a>,
@@ -132,6 +132,8 @@
           </div>
           <div class="is-size-5 publication-authors">
             <span class="author-block">* denotes equal contribution</span>
+            <span class="author-block">🦾 contributed to Table-Top Manipulation system development</span>
+            <span class="author-block">🐶 contributed to Mobile Manipulation system development</span>
           </div>
           
 
@@ -157,6 +159,16 @@
                       <i class="fas fa-file-pdf"></i>
                   </span>
                   <span>Paper</span>
+                </a>
+              </span>
+              <!-- Supp Link. -->
+              <span class="link-block">
+                <a href="./static/Supplementary.pdf"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fas fa-file-pdf"></i>
+                  </span>
+                  <span>Supplementary</span>
                 </a>
               </span>
               <!-- arXiv Link. -->
@@ -221,19 +233,16 @@
         <figure class="image">
           <img src="./static/images/maestro_concept.png">
         </figure>
-        <br>
+
         <div class="content has-text-justified">
           <p>
             <strong>Maestro</strong> receives language instruction and leverages a set of tools to complete diverse tasks in a zero-shot setting.
           </p>
-        </div>
+        </div>  
       </div>
     </div>
   </div>
 </section>
-
-
-
 <section class="section">
   <div class="container is-max-desktop">
     <!-- Abstract. -->
@@ -254,7 +263,7 @@
     <!-- Method. -->
     <div class="columns is-centered has-text-centered">
       <div class="column is-full-width">
-        <h2 class="title is-3">Method</h2>
+        <h2 class="title is-3">Overview of Maestro</h2>
         <figure class="image">
           <img src="./static/images/maestro_method.png">
         </figure>
@@ -275,7 +284,7 @@
     <!-- Tabletop Videos -->
     <div class="columns is-centered has-text-centered">
       <div class="column is-full-width">
-        <h2 class="title is-3">Tabletop Manipulation Results</h2>
+        <h2 class="title is-3">Tabletop Manipulation Videos</h2>
         
         <!-- First row: 2 videos -->
         <div class="columns is-centered">
@@ -339,7 +348,7 @@
     <!-- Mobile Videos -->
     <div class="columns is-centered has-text-centered mt-6">
       <div class="column is-full-width">
-        <h2 class="title is-3">Mobile Manipulation Results</h2>
+        <h2 class="title is-3">Mobile Manipulation Videos</h2>
         
         <!-- First row: 2 videos -->
         <div class="columns is-centered">
@@ -382,6 +391,112 @@
               </video>
               <p class="subtitle is-6 mt-2">"Collect all plush toys on the white table"</p>
             </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <!-- Method. -->
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-full-width">
+        <h2 class="title is-3">Toolset Overview</h2>
+        <figure class="image">
+          <img src="./static/images/tools.png">
+        </figure>
+        <div class="content has-text-justified">
+          <br>
+          <p>
+            Maestro framework's strength lies in its comprehensive and hierarchical toolset, which the VLM dynamically programs to execute tasks.
+          </p>
+          <p>
+            <strong>Core Tool Categories</strong>
+          </p>
+          <ul>
+            <li>
+              <strong>Perception:</strong> We employ a "coarse-to-fine" strategy, using fast, low-granularity inputs (raw images, object center points) alongside highly precise tools like FoundationStereo depth maps and salient task-relevant points. This allows the VLM to choose the right tool to balance speed and accuracy for each sub-task.
+            </li>
+            <li>
+              <strong>Control:</strong> Low-level Cartesian movements are paired with cuRobo collision-free motion planning for safety and reliable object interaction in cluttered scenes.
+            </li>
+            <li>
+              <strong>Learned Visuomotor Policies:</strong> The system integrates advanced capabilities like the GraspGen grasp model and the state-of-the-art π0.5 VLA model. Integration of the fast VLA model is enabled by a dedicated, high-speed VLM monitor that checks for task completion and allows for timely interruption.
+            </li>
+            <li>
+              <strong>Geometric Reasoning:</strong> To address the spatial reasoning gaps in current VLMs, we provide specialized tools (e.g., constructing vectors, computing relative rotations). These tools enable the VLM to break down complex actions into explicit geometric steps.
+            </li>
+            <li>
+              <strong>Image Editing:</strong> Image editing tools are provided to draw points and overlay 6D poses, enhancing the VLM's ability to ground its reasoning in the visual scene.
+            </li>
+          </ul>
+
+          <p>
+            <strong>Mobile Manipulation Extensions</strong>
+          </p>
+          <p>
+            For mobile tasks, the toolset is expanded to include robust state estimation (using LiDAR–Inertial Odometry), active perception (e.g., look around, remember object location), and dual-mode locomotion (global navigation and fine-grained nudging). This enables the agent to successfully execute multi-stage, long-horizon tasks, such as transport and exploration, across large workspaces.
+            By effectively programming and coordinating these diverse, high-quality modules, Maestro successfully fuses the semantic intelligence of VLMs with the precision of specialized robotics—a combination essential for achieving superior zero-shot generalization.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <!-- Method. -->
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-half">
+        <h2 class="title is-3">Prompt</h2>
+        <figure class="image">
+          <img src="./static/images/prompt.jpg">
+        </figure>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Results Section -->
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-full-width">
+        <h2 class="title is-3">Maestro Zero-Shot Quantitative Results</h2>
+        <div class="content has-text-justified">
+          <p>
+            To ensure systematic evaluation, we adopted the STAR-Gen taxonomy of generalization to create five diverse, meaningful task perturbations for each challenge axis, measuring system performance using a task progress score rubric across tabletop (Franka Panda) and mobile (Unitree Go2-W with AgileX PiPER) robot embodiments.
+          </p>
+        </div>
+        <h2 class="title is-4">Tabletop Manipulation Results</h2>
+        <div class="content has-text-justified">
+          <p>
+            Maestro substantially outperforms all VLA and CaP baselines across challenging manipulation tasks. This success stems from combining the VLM's high-level semantic reasoning with specialized tools for low-level execution precision; while VLA models struggle with out-of-distribution scenarios (like articulated objects) and lack memory, Maestro remains robust and adaptable.          </p>
+        </div>
+        <figure class="image">
+          <img src="./static/images/franka_results_main.png">
+        </figure>
+      </div>
+    </div>
+  </div>
+  
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-full-width">
+        <h2 class="title is-4">Mobile Manipulation Results</h2>
+        <div class="content has-text-justified">
+          <p>
+            For mobile manipulation, Maestro successfully executes complex, long-horizon tasks across four challenge axes. Performance on long-horizon tasks is bolstered by a cached semantic map for persistent object tracking, though failures occasionally occur due to low-level issues like inaccurate depth or invalid grasp poses. In contrast, active exploration and object affordance reasoning benefit greatly from multi-view replanning and precise keypoint selection, leading to high success rates.
+          </p>
+        </div>
+        <div class="columns is-centered">
+          <div class="column is-half">
+            <figure class="image">
+              <img src="./static/images/mobile_results.png">
+            </figure>
           </div>
         </div>
       </div>
