@@ -333,21 +333,52 @@
           </div>
         </div>
 
-        <!-- Third row: 1 video centered -->
+        <!-- Third row: 2 videos -->
+        <div class="columns is-centered">
+            <div class="column is-half">
+              <div class="video-container">
+                <video controls width="100%" style="border-radius: 10px;" autoplay loop muted>
+                  <source src="./static/videos/tabletop/put_the_tennis_ball_into_the_bowl.mp4" type="video/mp4">
+                  Your browser does not support the video tag.
+                </video>
+                <p class="subtitle is-6 mt-2">"Put the tennis ball into the bowl."</p>
+              </div>
+            </div>
+            <div class="column is-half">
+              <div class="video-container">
+                <video controls width="100%" style="border-radius: 10px;" autoplay loop muted>
+                  <source src="./static/videos/tabletop/hang_cup.mp4" type="video/mp4">
+                  Your browser does not support the video tag.
+                </video>
+                <p class="subtitle is-6 mt-2">"Hang the mug cup onto the mug hanger stand."</p>
+              </div>
+            </div>
+        </div>
+
+        <!-- Fourth row: 2 videos -->
         <div class="columns is-centered">
           <div class="column is-half">
             <div class="video-container">
               <video controls width="100%" style="border-radius: 10px;" autoplay loop muted>
-                <source src="./static/videos/tabletop/put_the_tennis_ball_into_the_bowl.mp4" type="video/mp4">
+                <source src="./static/videos/tabletop/cut_banana_with_knife.mp4" type="video/mp4">
                 Your browser does not support the video tag.
               </video>
-              <p class="subtitle is-6 mt-2">"Put the tennis ball into the bowl."</p>
+              <p class="subtitle is-6 mt-2">"Orthogonally cut the banana in half with the black knife."</p>
+            </div>
+          </div>
+          <div class="column is-half">
+            <div class="video-container">
+              <video controls width="100%" style="border-radius: 10px;" autoplay loop muted>
+                <source src="./static/videos/tabletop/clean_table_from_largest_to_smallest.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+              </video>
+              <p class="subtitle is-6 mt-2">"Clean the table by putting all the items into the bowl, from big size to small size."</p>
             </div>
           </div>
         </div>
       </div>
     </div>
-
+  
     <!-- Mobile Videos -->
     <div class="columns is-centered has-text-centered mt-6">
       <div class="column is-full-width">
@@ -420,19 +451,22 @@
           </p>
           <ul>
             <li>
-              <strong>Perception:</strong> We employ a "coarse-to-fine" strategy, using fast, low-granularity inputs (raw images, object center points) alongside highly precise tools like FoundationStereo depth maps and salient task-relevant points. This allows the VLM to choose the right tool to balance speed and accuracy for each sub-task.
+              <strong>"Coarse-to-fine" perception modules:</strong> We designed a tiered hierarchy of perception tools. We provide tools ranging from the fastest and simplest level (raw sensory input), medium level (mask centroid), to precise but slow (VLM-selected task-relevant keypoints). These tools give Maestro agency to autonomously select the right tools for the right uses, balancing execution speed and task performance.
             </li>
             <li>
-              <strong>Control:</strong> Low-level Cartesian movements are paired with cuRobo collision-free motion planning for safety and reliable object interaction in cluttered scenes.
+              <strong>Active perception modules:</strong> A dedicated module actively improves the performance of other vision-based tools by gathering better sensory information (like zooming or looking around) to overcome inherent noise.
             </li>
             <li>
-              <strong>Learned Visuomotor Policies:</strong> The system integrates advanced capabilities like the GraspGen grasp model and the state-of-the-art π0.5 VLA model. Integration of the fast VLA model is enabled by a dedicated, high-speed VLM monitor that checks for task completion and allows for timely interruption.
+              <strong>Geometry and linear algebra modules:</strong> Explicitly providing geometry and linear algebra tools that improve Maestro’s ability to reason step-by-step about object affordances and spatial relations.
             </li>
             <li>
-              <strong>Geometric Reasoning:</strong> To address the spatial reasoning gaps in current VLMs, we provide specialized tools (e.g., constructing vectors, computing relative rotations). These tools enable the VLM to break down complex actions into explicit geometric steps.
+              <strong>Fast-inference VLM monitor enables VLA usage:</strong> A fast-inference, locally hosted VLM (Qwen2.5-VL-72B-Instruct) acts as a high-frequency monitor (2Hz) to check task conditions and precisely interrupt fast-running Visual Language Agents (VLAs) upon completion or for replanning.
             </li>
             <li>
-              <strong>Image Editing:</strong> Image editing tools are provided to draw points and overlay 6D poses, enhancing the VLM's ability to ground its reasoning in the visual scene.
+              <strong>Collision avoidanc:</strong> Efficient, point-cloud-based motion planning is integrated for robust and generalizable object interactions in cluttered environments.
+            </li>
+            <li>
+              <strong>Semantic map:</strong> By caching observed object locations, it supports persistent reasoning for mobile manipulation tasks.
             </li>
           </ul>
 
@@ -463,6 +497,26 @@
           <p>
             A summarized overview of Maestro's system prompt.          </p>
         </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <!-- Star-Gen Generalization. -->
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-full-width">
+        <h2 class="title is-3">Systematic Generalization for Evaluation</h2>
+        <div class="content has-text-justified">
+          <p>
+            Our evaluation protocol is designed for systematic experimentation, adopting the <strong>STAR-Gen taxonomy</strong> of generalization for robot manipulation. STAR-Gen formalizes testing by creating systematic perturbations relative to a base task. We leverage the STAR-Gen scenario generation tool, prompting Gemini to generate diverse task instances across four key axes: <strong>visual changes to task-relevant objects</strong>, <strong>changes to object poses</strong>, <strong>changes to action verbs requiring new behavior</strong>, and <strong>introducing entirely new manipulated objects</strong>, This approach ensures that every trial differs substantially and meaningfully from the rest, capturing realistic in-the-wild diversity and providing a rigorous test of Maestro's robustness and adaptability. The table below presents the experimental setup and results comparison for each task trial.
+          </p>
+        </div>
+        <br>
+        <figure class="image">
+          <img src="./static/images/star_gen_figure.png">
+        </figure>
       </div>
     </div>
   </div>
@@ -506,6 +560,41 @@
             <figure class="image">
               <img src="./static/images/mobile_results.png">
             </figure>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Maestro+VLA Section -->
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-full-width">
+        <h2 class="title is-3">Maestro Guides VLA for Efficient Action</h2>
+        <div class="content has-text-justified">
+          <p>
+            Maestro achieves improved efficiency and performance through the integrated use of a VLM and VLA tool module. The VLM leverages its sophisticated reasoning capability to interpret complex user instructions and provide detailed, accurate observational reasoning. The VLA functions as a fast and powerful "muscle," quickly completing simple, well-trained subtasks such as pick and place. This strategic division of labor allows the Maestro+VLA system to execute complex commands both quickly and accurately.
+          </p>
+        </div>        
+        <div class="columns is-centered">
+          <div class="column is-full-width">
+            <div class="video-container">
+              <video controls width="100%" style="border-radius: 10px;" autoplay loop muted>
+                <source src="./static/videos/tabletop/vla_and_maestro.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+              </video>
+              <p class="subtitle is-6 mt-2">"Clean the table by putting all the items into the bowl, from big size to small size."</p>
+            </div>
+          </div>
+        </div>
+        <br>
+        <div class="columns is-centered">
+          <div class="column is-half">
+          <figure class="image">
+            <img src="./static/images/maestro_vla_table.png">
+          </figure>
           </div>
         </div>
       </div>
