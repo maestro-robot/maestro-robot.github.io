@@ -510,7 +510,7 @@
         <h2 class="title is-3">Systematic Generalization for Evaluation</h2>
         <div class="content has-text-justified">
           <p>
-            Our evaluation protocol is designed for systematic experimentation, adopting the <strong>STAR-Gen taxonomy</strong> of generalization for robot manipulation. STAR-Gen formalizes testing by creating systematic perturbations relative to a base task. We leverage the STAR-Gen scenario generation tool, prompting Gemini to generate diverse task instances across four key axes: <strong>visual changes to task-relevant objects</strong>, <strong>changes to object poses</strong>, <strong>changes to action verbs requiring new behavior</strong>, and <strong>introducing entirely new manipulated objects</strong>, This approach ensures that every trial differs substantially and meaningfully from the rest, capturing realistic in-the-wild diversity and providing a rigorous test of Maestro's robustness and adaptability. The table below presents the experimental setup and results comparison for each task trial.
+            Our evaluation protocol is designed for systematic experimentation, adopting the <strong><a href="https://stargen-taxonomy.github.io/">STAR-Gen</a> taxonomy</strong> of generalization for robot manipulation. STAR-Gen formalizes testing by creating systematic perturbations relative to a base task. We leverage the STAR-Gen scenario generation tool, prompting Gemini to generate diverse task instances across four key axes: <strong>visual changes to task-relevant objects</strong>, <strong>changes to object poses</strong>, <strong>changes to action verbs requiring new behavior</strong>, and <strong>introducing entirely new manipulated objects</strong>, This approach ensures that every trial differs substantially and meaningfully from the rest, capturing realistic in-the-wild diversity and providing a rigorous test of Maestro's robustness and adaptability. The table below presents the experimental setup and results comparison for each task trial.
           </p>
         </div>
         <br>
@@ -591,12 +591,61 @@
         </div>
         <br>
         <div class="columns is-centered">
-          <div class="column is-half">
+          <div class="column is-full-width">
           <figure class="image">
-            <img src="./static/images/maestro_vla_table.png">
+            <img src="./static/images/vla_graph.jpg">
           </figure>
           </div>
         </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-full-width">
+        <h2 class="title is-3">Maestro in Data Collection (with <a href="https://willjhliang.github.io/tether-website/">Tether</a>)</h2>
+        
+        <div class="columns is-centered">
+          
+          <div class="column is-half">
+            <div class="video-container">
+              <iframe 
+                src="https://drive.google.com/file/d/1zP1pUaSiQ892Y2Gix_WEZaOca7Qtt12U/preview" 
+                width="100%" 
+                height="623" 
+                allow="autoplay" 
+                style="border-radius: 10px; border: none;">
+              </iframe>
+              <p class="subtitle is-6 mt-2">Bowl from Shelf</p>
+            </div>
+          </div>
+          
+          <div class="column is-half">
+            <div class="video-container">
+              <iframe 
+                src="https://drive.google.com/file/d/1E4KInzPoypnNwfkcqLl_uELI9QawugEX/preview" 
+                width="100%" 
+                height="623" 
+                allow="autoplay" 
+                style="border-radius: 10px; border: none;">
+              </iframe>
+              <p class="subtitle is-6 mt-2">Wiping with Cloth</p>
+            </div>
+          </div>
+          
+        </div>
+        <div class="content has-text-justified">
+          <p>
+            We demonstrate Maestro's potential for autonomous data collection when integrated with the Tether project. Tether provides a framework for warping a demonstration agent (in this case, Maestro) to enable continuous, autonomous task execution and subsequent data logging. The videos above illustrate Maestro operating within the Tether wrapper to successfully complete two distinct manipulation tasks. This closed-loop setup allows Maestro to run autonomously, generating high-quality, diverse data that can be used to further train and improve generalist robotic systems.          
+          </p>
+        </div>
+        <figure class="image">
+          <img src="./static/images/tether_graph.jpg">
+        </figure>
+
       </div>
     </div>
   </div>
