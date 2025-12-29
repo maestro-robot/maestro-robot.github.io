@@ -1,0 +1,440 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+            
+        
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork {
+                 width: 100%;
+                 height: 900px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+             
+
+             
+
+             
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+            
+            
+            <div id="mynetwork" class="card-body"></div>
+        </div>
+
+        
+        
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+              
+
+              
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork');
+
+                  
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": "#3B82F6", "font": {"color": "#333333"}, "id": "estimate_feature_point", "label": "Keypoint Pointing", "shape": "dot", "size": 17.030825022665457, "title": "Keypoint Pointing\nCategory: perception\nCalls: 64", "x": 0, "y": 0}, {"color": "#3B82F6", "font": {"color": "#333333"}, "id": "get_image", "label": "Get Image", "shape": "dot", "size": 18.490480507706256, "title": "Get Image\nCategory: perception\nCalls: 110", "x": 0, "y": 120}, {"color": "#3B82F6", "font": {"color": "#333333"}, "id": "get_object_bbox", "label": "Get BBox", "shape": "dot", "size": 16.4596554850408, "title": "Get BBox\nCategory: perception\nCalls: 46", "x": 0, "y": 240}, {"color": "#3B82F6", "font": {"color": "#333333"}, "id": "get_position_from_labels", "label": "Gemini Pointing", "shape": "dot", "size": 16.332728921124207, "title": "Gemini Pointing\nCategory: perception\nCalls: 42", "x": 0, "y": 360}, {"color": "#3B82F6", "font": {"color": "#333333"}, "id": "naive_pointing", "label": "BBox Pointing", "shape": "dot", "size": 16.491387126019944, "title": "BBox Pointing\nCategory: perception\nCalls: 47", "x": 0, "y": 480}, {"color": "#3B82F6", "font": {"color": "#333333"}, "id": "rescan_wrist", "label": "Rescan Scene", "shape": "dot", "size": 15.095194922937443, "title": "Rescan Scene\nCategory: perception\nCalls: 3", "x": 0, "y": 600}, {"color": "#3B82F6", "font": {"color": "#333333"}, "id": "scan_wrist", "label": "Scan Scene", "shape": "dot", "size": 16.96736174070716, "title": "Scan Scene\nCategory: perception\nCalls: 62", "x": 0, "y": 720}, {"color": "#10B981", "font": {"color": "#333333"}, "id": "move_gripper_to", "label": "Move To", "shape": "dot", "size": 50.0, "title": "Move To\nCategory: control\nCalls: 1103", "x": 400, "y": 0}, {"color": "#F59E0B", "font": {"color": "#333333"}, "id": "close_gripper", "label": "Close Gripper", "shape": "dot", "size": 19.41069809610154, "title": "Close Gripper\nCategory: gripper\nCalls: 139", "x": 600, "y": 0}, {"color": "#F59E0B", "font": {"color": "#333333"}, "id": "open_gripper", "label": "Open Gripper", "shape": "dot", "size": 25.249320036264734, "title": "Open Gripper\nCategory: gripper\nCalls: 323", "x": 600, "y": 120}, {"color": "#EF4444", "font": {"color": "#333333"}, "id": "get_grasp_pose", "label": "Grasp Generation", "shape": "dot", "size": 16.174070716228467, "title": "Grasp Generation\nCategory: grasping\nCalls: 37", "x": 200, "y": 0}, {"color": "#EF4444", "font": {"color": "#333333"}, "id": "plan_grasp", "label": "Grasp Planning", "shape": "dot", "size": 16.174070716228467, "title": "Grasp Planning\nCategory: grasping\nCalls: 37", "x": 200, "y": 120}, {"color": "#6B7280", "font": {"color": "#333333"}, "id": "euler_to_rmat", "label": "Euler\u2192RotMat", "shape": "dot", "size": 15.031731640979148, "title": "Euler\u2192RotMat\nCategory: geometry\nCalls: 1", "x": 800, "y": 0}, {"color": "#6B7280", "font": {"color": "#333333"}, "id": "measure_relative_rotation", "label": "Measure Rotation", "shape": "dot", "size": 15.12692656391659, "title": "Measure Rotation\nCategory: geometry\nCalls: 4", "x": 800, "y": 120}, {"color": "#6B7280", "font": {"color": "#333333"}, "id": "measure_vector", "label": "Measure Vector", "shape": "dot", "size": 15.317316409791477, "title": "Measure Vector\nCategory: geometry\nCalls: 10", "x": 800, "y": 240}, {"color": "#6B7280", "font": {"color": "#333333"}, "id": "rmat_to_euler", "label": "RotMat\u2192Euler", "shape": "dot", "size": 15.063463281958295, "title": "RotMat\u2192Euler\nCategory: geometry\nCalls: 2", "x": 800, "y": 360}, {"color": "#6B7280", "font": {"color": "#333333"}, "id": "rotate_by", "label": "Rotate", "shape": "dot", "size": 15.44424297370807, "title": "Rotate\nCategory: geometry\nCalls: 14", "x": 800, "y": 480}, {"color": "#8B5CF6", "font": {"color": "#333333"}, "id": "execute_with_pi05", "label": "VLA (\u03c00.5)", "shape": "dot", "size": 15.57116953762466, "title": "VLA (\u03c00.5)\nCategory: vla\nCalls: 18", "x": 1000, "y": 0}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "estimate_feature_point", "title": "Keypoint Pointing \u2192 Keypoint Pointing: 22", "to": "estimate_feature_point", "value": 22, "width": 2.287581699346405}, {"arrows": "to", "from": "estimate_feature_point", "title": "Keypoint Pointing \u2192 Get Image: 3", "to": "get_image", "value": 3, "width": 2.0392156862745097}, {"arrows": "to", "from": "estimate_feature_point", "title": "Keypoint Pointing \u2192 Gemini Pointing: 1", "to": "get_position_from_labels", "value": 1, "width": 2.0130718954248366}, {"arrows": "to", "from": "estimate_feature_point", "title": "Keypoint Pointing \u2192 BBox Pointing: 3", "to": "naive_pointing", "value": 3, "width": 2.0392156862745097}, {"arrows": "to", "from": "estimate_feature_point", "title": "Keypoint Pointing \u2192 Move To: 2", "to": "move_gripper_to", "value": 2, "width": 2.026143790849673}, {"arrows": "to", "from": "estimate_feature_point", "title": "Keypoint Pointing \u2192 Close Gripper: 1", "to": "close_gripper", "value": 1, "width": 2.0130718954248366}, {"arrows": "to", "from": "estimate_feature_point", "title": "Keypoint Pointing \u2192 Open Gripper: 25", "to": "open_gripper", "value": 25, "width": 2.326797385620915}, {"arrows": "to", "from": "estimate_feature_point", "title": "Keypoint Pointing \u2192 Grasp Generation: 1", "to": "get_grasp_pose", "value": 1, "width": 2.0130718954248366}, {"arrows": "to", "from": "estimate_feature_point", "title": "Keypoint Pointing \u2192 Measure Vector: 1", "to": "measure_vector", "value": 1, "width": 2.0130718954248366}, {"arrows": "to", "from": "estimate_feature_point", "title": "Keypoint Pointing \u2192 RotMat\u2192Euler: 1", "to": "rmat_to_euler", "value": 1, "width": 2.0130718954248366}, {"arrows": "to", "from": "get_image", "title": "Get Image \u2192 Keypoint Pointing: 23", "to": "estimate_feature_point", "value": 23, "width": 2.3006535947712417}, {"arrows": "to", "from": "get_image", "title": "Get Image \u2192 Get Image: 25", "to": "get_image", "value": 25, "width": 2.326797385620915}, {"arrows": "to", "from": "get_image", "title": "Get Image \u2192 Gemini Pointing: 24", "to": "get_position_from_labels", "value": 24, "width": 2.313725490196078}, {"arrows": "to", "from": "get_image", "title": "Get Image \u2192 BBox Pointing: 10", "to": "naive_pointing", "value": 10, "width": 2.130718954248366}, {"arrows": "to", "from": "get_image", "title": "Get Image \u2192 Move To: 8", "to": "move_gripper_to", "value": 8, "width": 2.104575163398693}, {"arrows": "to", "from": "get_image", "title": "Get Image \u2192 Open Gripper: 9", "to": "open_gripper", "value": 9, "width": 2.1176470588235294}, {"arrows": "to", "from": "get_image", "title": "Get Image \u2192 Measure Vector: 1", "to": "measure_vector", "value": 1, "width": 2.0130718954248366}, {"arrows": "to", "from": "get_image", "title": "Get Image \u2192 Rotate: 2", "to": "rotate_by", "value": 2, "width": 2.026143790849673}, {"arrows": "to", "from": "get_image", "title": "Get Image \u2192 VLA (\u03c00.5): 5", "to": "execute_with_pi05", "value": 5, "width": 2.065359477124183}, {"arrows": "to", "from": "get_object_bbox", "title": "Get BBox \u2192 Keypoint Pointing: 2", "to": "estimate_feature_point", "value": 2, "width": 2.026143790849673}, {"arrows": "to", "from": "get_object_bbox", "title": "Get BBox \u2192 Get Image: 1", "to": "get_image", "value": 1, "width": 2.0130718954248366}, {"arrows": "to", "from": "get_object_bbox", "title": "Get BBox \u2192 BBox Pointing: 16", "to": "naive_pointing", "value": 16, "width": 2.2091503267973858}, {"arrows": "to", "from": "get_object_bbox", "title": "Get BBox \u2192 Move To: 1", "to": "move_gripper_to", "value": 1, "width": 2.0130718954248366}, {"arrows": "to", "from": "get_object_bbox", "title": "Get BBox \u2192 Open Gripper: 23", "to": "open_gripper", "value": 23, "width": 2.3006535947712417}, {"arrows": "to", "from": "get_object_bbox", "title": "Get BBox \u2192 Grasp Generation: 1", "to": "get_grasp_pose", "value": 1, "width": 2.0130718954248366}, {"arrows": "to", "from": "get_object_bbox", "title": "Get BBox \u2192 VLA (\u03c00.5): 1", "to": "execute_with_pi05", "value": 1, "width": 2.0130718954248366}, {"arrows": "to", "from": "get_position_from_labels", "title": "Gemini Pointing \u2192 Keypoint Pointing: 2", "to": "estimate_feature_point", "value": 2, "width": 2.026143790849673}, {"arrows": "to", "from": "get_position_from_labels", "title": "Gemini Pointing \u2192 Gemini Pointing: 1", "to": "get_position_from_labels", "value": 1, "width": 2.0130718954248366}, {"arrows": "to", "from": "get_position_from_labels", "title": "Gemini Pointing \u2192 BBox Pointing: 5", "to": "naive_pointing", "value": 5, "width": 2.065359477124183}, {"arrows": "to", "from": "get_position_from_labels", "title": "Gemini Pointing \u2192 Rescan Scene: 2", "to": "rescan_wrist", "value": 2, "width": 2.026143790849673}, {"arrows": "to", "from": "get_position_from_labels", "title": "Gemini Pointing \u2192 Open Gripper: 30", "to": "open_gripper", "value": 30, "width": 2.392156862745098}, {"arrows": "to", "from": "get_position_from_labels", "title": "Gemini Pointing \u2192 Grasp Generation: 1", "to": "get_grasp_pose", "value": 1, "width": 2.0130718954248366}, {"arrows": "to", "from": "naive_pointing", "title": "BBox Pointing \u2192 Get BBox: 46", "to": "get_object_bbox", "value": 46, "width": 2.6013071895424837}, {"arrows": "to", "from": "rescan_wrist", "title": "Rescan Scene \u2192 Gemini Pointing: 3", "to": "get_position_from_labels", "value": 3, "width": 2.0392156862745097}, {"arrows": "to", "from": "scan_wrist", "title": "Scan Scene \u2192 Keypoint Pointing: 1", "to": "estimate_feature_point", "value": 1, "width": 2.0130718954248366}, {"arrows": "to", "from": "scan_wrist", "title": "Scan Scene \u2192 Get Image: 60", "to": "get_image", "value": 60, "width": 2.784313725490196}, {"arrows": "to", "from": "move_gripper_to", "title": "Move To \u2192 Keypoint Pointing: 11", "to": "estimate_feature_point", "value": 11, "width": 2.1437908496732025}, {"arrows": "to", "from": "move_gripper_to", "title": "Move To \u2192 Get Image: 20", "to": "get_image", "value": 20, "width": 2.261437908496732}, {"arrows": "to", "from": "move_gripper_to", "title": "Move To \u2192 Gemini Pointing: 10", "to": "get_position_from_labels", "value": 10, "width": 2.130718954248366}, {"arrows": "to", "from": "move_gripper_to", "title": "Move To \u2192 BBox Pointing: 10", "to": "naive_pointing", "value": 10, "width": 2.130718954248366}, {"arrows": "to", "from": "move_gripper_to", "title": "Move To \u2192 Rescan Scene: 1", "to": "rescan_wrist", "value": 1, "width": 2.0130718954248366}, {"arrows": "to", "from": "move_gripper_to", "title": "Move To \u2192 Scan Scene: 62", "to": "scan_wrist", "value": 62, "width": 2.810457516339869}, {"arrows": "to", "from": "move_gripper_to", "title": "Move To \u2192 Move To: 612", "to": "move_gripper_to", "value": 612, "width": 10.0}, {"arrows": "to", "from": "move_gripper_to", "title": "Move To \u2192 Close Gripper: 107", "to": "close_gripper", "value": 107, "width": 3.3986928104575163}, {"arrows": "to", "from": "move_gripper_to", "title": "Move To \u2192 Open Gripper: 171", "to": "open_gripper", "value": 171, "width": 4.235294117647059}, {"arrows": "to", "from": "move_gripper_to", "title": "Move To \u2192 Grasp Planning: 37", "to": "plan_grasp", "value": 37, "width": 2.4836601307189543}, {"arrows": "to", "from": "move_gripper_to", "title": "Move To \u2192 Measure Vector: 6", "to": "measure_vector", "value": 6, "width": 2.0784313725490198}, {"arrows": "to", "from": "move_gripper_to", "title": "Move To \u2192 Rotate: 7", "to": "rotate_by", "value": 7, "width": 2.0915032679738563}, {"arrows": "to", "from": "move_gripper_to", "title": "Move To \u2192 VLA (\u03c00.5): 1", "to": "execute_with_pi05", "value": 1, "width": 2.0130718954248366}, {"arrows": "to", "from": "close_gripper", "title": "Close Gripper \u2192 Move To: 137", "to": "move_gripper_to", "value": 137, "width": 3.7908496732026142}, {"arrows": "to", "from": "close_gripper", "title": "Close Gripper \u2192 Open Gripper: 1", "to": "open_gripper", "value": 1, "width": 2.0130718954248366}, {"arrows": "to", "from": "close_gripper", "title": "Close Gripper \u2192 Measure Vector: 1", "to": "measure_vector", "value": 1, "width": 2.0130718954248366}, {"arrows": "to", "from": "open_gripper", "title": "Open Gripper \u2192 Keypoint Pointing: 3", "to": "estimate_feature_point", "value": 3, "width": 2.0392156862745097}, {"arrows": "to", "from": "open_gripper", "title": "Open Gripper \u2192 Get Image: 1", "to": "get_image", "value": 1, "width": 2.0130718954248366}, {"arrows": "to", "from": "open_gripper", "title": "Open Gripper \u2192 Gemini Pointing: 1", "to": "get_position_from_labels", "value": 1, "width": 2.0130718954248366}, {"arrows": "to", "from": "open_gripper", "title": "Open Gripper \u2192 BBox Pointing: 1", "to": "naive_pointing", "value": 1, "width": 2.0130718954248366}, {"arrows": "to", "from": "open_gripper", "title": "Open Gripper \u2192 Move To: 282", "to": "move_gripper_to", "value": 282, "width": 5.686274509803921}, {"arrows": "to", "from": "open_gripper", "title": "Open Gripper \u2192 Grasp Generation: 34", "to": "get_grasp_pose", "value": 34, "width": 2.4444444444444446}, {"arrows": "to", "from": "open_gripper", "title": "Open Gripper \u2192 Rotate: 1", "to": "rotate_by", "value": 1, "width": 2.0130718954248366}, {"arrows": "to", "from": "get_grasp_pose", "title": "Grasp Generation \u2192 Move To: 37", "to": "move_gripper_to", "value": 37, "width": 2.4836601307189543}, {"arrows": "to", "from": "plan_grasp", "title": "Grasp Planning \u2192 BBox Pointing: 1", "to": "naive_pointing", "value": 1, "width": 2.0130718954248366}, {"arrows": "to", "from": "plan_grasp", "title": "Grasp Planning \u2192 Move To: 4", "to": "move_gripper_to", "value": 4, "width": 2.052287581699346}, {"arrows": "to", "from": "plan_grasp", "title": "Grasp Planning \u2192 Close Gripper: 31", "to": "close_gripper", "value": 31, "width": 2.4052287581699345}, {"arrows": "to", "from": "plan_grasp", "title": "Grasp Planning \u2192 Open Gripper: 1", "to": "open_gripper", "value": 1, "width": 2.0130718954248366}, {"arrows": "to", "from": "euler_to_rmat", "title": "Euler\u2192RotMat \u2192 Measure Rotation: 1", "to": "measure_relative_rotation", "value": 1, "width": 2.0130718954248366}, {"arrows": "to", "from": "measure_relative_rotation", "title": "Measure Rotation \u2192 Rotate: 4", "to": "rotate_by", "value": 4, "width": 2.052287581699346}, {"arrows": "to", "from": "measure_vector", "title": "Measure Vector \u2192 Move To: 3", "to": "move_gripper_to", "value": 3, "width": 2.0392156862745097}, {"arrows": "to", "from": "measure_vector", "title": "Measure Vector \u2192 Open Gripper: 1", "to": "open_gripper", "value": 1, "width": 2.0130718954248366}, {"arrows": "to", "from": "measure_vector", "title": "Measure Vector \u2192 Euler\u2192RotMat: 1", "to": "euler_to_rmat", "value": 1, "width": 2.0130718954248366}, {"arrows": "to", "from": "measure_vector", "title": "Measure Vector \u2192 Measure Rotation: 3", "to": "measure_relative_rotation", "value": 3, "width": 2.0392156862745097}, {"arrows": "to", "from": "measure_vector", "title": "Measure Vector \u2192 Measure Vector: 1", "to": "measure_vector", "value": 1, "width": 2.0130718954248366}, {"arrows": "to", "from": "measure_vector", "title": "Measure Vector \u2192 RotMat\u2192Euler: 1", "to": "rmat_to_euler", "value": 1, "width": 2.0130718954248366}, {"arrows": "to", "from": "rmat_to_euler", "title": "RotMat\u2192Euler \u2192 Move To: 2", "to": "move_gripper_to", "value": 2, "width": 2.026143790849673}, {"arrows": "to", "from": "rotate_by", "title": "Rotate \u2192 Move To: 14", "to": "move_gripper_to", "value": 14, "width": 2.183006535947712}, {"arrows": "to", "from": "execute_with_pi05", "title": "VLA (\u03c00.5) \u2192 Gemini Pointing: 2", "to": "get_position_from_labels", "value": 2, "width": 2.026143790849673}, {"arrows": "to", "from": "execute_with_pi05", "title": "VLA (\u03c00.5) \u2192 BBox Pointing: 1", "to": "naive_pointing", "value": 1, "width": 2.0130718954248366}, {"arrows": "to", "from": "execute_with_pi05", "title": "VLA (\u03c00.5) \u2192 Move To: 1", "to": "move_gripper_to", "value": 1, "width": 2.0130718954248366}, {"arrows": "to", "from": "execute_with_pi05", "title": "VLA (\u03c00.5) \u2192 VLA (\u03c00.5): 11", "to": "execute_with_pi05", "value": 11, "width": 2.1437908496732025}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {"nodes": {"font": {"size": 18, "face": "Arial", "bold": true}, "borderWidth": 2, "shadow": true}, "edges": {"arrows": {"to": {"enabled": true, "scaleFactor": 0.5}}, "smooth": {"type": "curvedCW", "roundness": 0.2}, "color": {"inherit": "from"}}, "physics": {"enabled": false}, "interaction": {"dragNodes": true, "hover": true, "navigationButtons": true, "zoomView": true}};
+
+                  
+
+
+                  
+
+                  network = new vis.Network(container, data, options);
+
+                  
+
+                  
+
+                  
+
+
+                  
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    
+    <div id="legendPanel" style="position: fixed; top: 10px; right: 10px; background: rgba(255,255,255,0.95); 
+                padding: 15px; border-radius: 8px; color: #333; font-family: Arial; z-index: 1000;
+                border: 1px solid #ddd; box-shadow: 0 2px 8px rgba(0,0,0,0.1); cursor: move;"
+         onmousedown="startDragLegend(event)">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+            <h3 style="margin: 0; font-size: 16px;">Categories</h3>
+            <button onclick="toggleLegend()" style="background: none; border: none; cursor: pointer; font-size: 16px; padding: 0 5px;">✕</button>
+        </div>
+        <div id="legendContent">
+            
+            <div style="display: flex; align-items: center; margin: 5px 0;">
+                <div style="width: 15px; height: 15px; background: #3B82F6; 
+                            border-radius: 3px; margin-right: 8px;"></div>
+                <span>perception</span>
+            </div>
+            
+            <div style="display: flex; align-items: center; margin: 5px 0;">
+                <div style="width: 15px; height: 15px; background: #10B981; 
+                            border-radius: 3px; margin-right: 8px;"></div>
+                <span>control</span>
+            </div>
+            
+            <div style="display: flex; align-items: center; margin: 5px 0;">
+                <div style="width: 15px; height: 15px; background: #F59E0B; 
+                            border-radius: 3px; margin-right: 8px;"></div>
+                <span>gripper</span>
+            </div>
+            
+            <div style="display: flex; align-items: center; margin: 5px 0;">
+                <div style="width: 15px; height: 15px; background: #EF4444; 
+                            border-radius: 3px; margin-right: 8px;"></div>
+                <span>grasping</span>
+            </div>
+            
+            <div style="display: flex; align-items: center; margin: 5px 0;">
+                <div style="width: 15px; height: 15px; background: #6B7280; 
+                            border-radius: 3px; margin-right: 8px;"></div>
+                <span>geometry</span>
+            </div>
+            
+            <div style="display: flex; align-items: center; margin: 5px 0;">
+                <div style="width: 15px; height: 15px; background: #8B5CF6; 
+                            border-radius: 3px; margin-right: 8px;"></div>
+                <span>vla</span>
+            </div>
+            
+        </div>
+    </div>
+    <button id="showLegendBtn" onclick="toggleLegend()" 
+            style="display: none; position: fixed; top: 10px; right: 10px; background: #3b82f6; color: white; 
+                   border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; z-index: 1000; font-size: 12px;">
+        📊 Show Legend
+    </button>
+    
+    <div id="controlPanel" style="position: fixed; top: 10px; left: 10px; background: rgba(255,255,255,0.95); 
+                padding: 15px; border-radius: 8px; color: #333; font-family: Arial; z-index: 1000; max-width: 400px;
+                border: 1px solid #ddd; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+            <div>
+                <h2 style="margin: 0; font-size: 18px; color: #1f2937;">Robot Manipulation Passing Map</h2>
+                <p style="margin: 5px 0 10px 0; color: #666; font-size: 13px;">
+                    62 trials • 2062 function calls
+                </p>
+            </div>
+            <button onclick="toggleControls()" style="background: none; border: none; cursor: pointer; font-size: 16px; padding: 0 5px;">✕</button>
+        </div>
+        
+        <div id="controlContent">
+            <div style="margin-bottom: 12px;">
+                <label style="font-size: 13px; color: #555; display: block; margin-bottom: 5px;">
+                    🔍 Highlight Task Strategy:
+                </label>
+                <select id="workflowSelect" onchange="highlightWorkflow()" 
+                        style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #ccc; 
+                               background: #f9fafb; color: #333; font-size: 12px; cursor: pointer;">
+                    <option value="">— Show All (no highlight) —</option>
+                    <option value="0">Scan Scene → Get Image → Gemini Pointing (24x)</option>
+                <option value="1">Scan Scene → Get Image → Gemini Pointing → Open Gripper (20x)</option>
+                <option value="2">Scan Scene → Get Image → Gemini Pointing → Open Gripper → Grasp Generation → Move To (12x)</option>
+                <option value="3">Scan Scene → Get Image → Gemini Pointing → Open Gripper → Move To → Close Gripper (8x)</option>
+                <option value="4">Scan Scene → ... → Close Gripper (8 steps, 7x)</option>
+                <option value="5">Scan Scene → ... → Open Gripper (10 steps, 6x)</option>
+                <option value="6">Scan Scene → Get Image → Keypoint Pointing (21x)</option>
+                <option value="7">Scan Scene → Get Image → Keypoint Pointing → Open Gripper (13x)</option>
+                <option value="8">Scan Scene → Get Image → Keypoint Pointing → Open Gripper → Move To → Close Gripper (7x)</option>
+                <option value="9">Scan Scene → Get Image → BBox Pointing → Get BBox (9x)</option>
+                <option value="10">Scan Scene → Get Image → BBox Pointing → Get BBox → Open Gripper (8x)</option>
+                <option value="11">Scan Scene → Get Image → BBox Pointing → Get BBox → Open Gripper → Move To (7x)</option>
+                <option value="12">Scan Scene → Get Image → VLA (π0.5) (5x)</option>
+                
+                </select>
+            </div>
+            
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                <button onclick="saveLayout()" style="background: #3b82f6; color: white; border: none; 
+                        padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 500;">
+                    💾 Save Layout
+                </button>
+                <button onclick="resetToSaved()" style="background: #10b981; color: white; border: none; 
+                        padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 500;">
+                    🔄 Reset to Saved
+                </button>
+            </div>
+            <p id="saveStatus" style="margin: 8px 0 0 0; font-size: 12px; color: #10b981; display: none;"></p>
+            
+            <div id="workflowPath" style="margin-top: 10px; padding: 10px; background: rgba(59, 130, 246, 0.1); 
+                                           border-radius: 6px; display: none; max-height: 200px; overflow-y: auto;
+                                           border: 1px solid rgba(59, 130, 246, 0.3);">
+                <p style="margin: 0; font-size: 12px; color: #3b82f6; font-weight: bold;">Selected Task Strategy:</p>
+                <p id="workflowSteps" style="margin: 5px 0 0 0; font-size: 12px; line-height: 1.6; color: #555;"></p>
+            </div>
+        </div>
+    </div>
+    <button id="showControlsBtn" onclick="toggleControls()" 
+            style="display: none; position: fixed; top: 10px; left: 10px; background: #3b82f6; color: white; 
+                   border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; z-index: 1000; font-size: 12px;">
+        ⚙️ Show Controls
+    </button>
+    
+    <script>
+    const STORAGE_KEY = 'passingMapLayout';
+    
+    // Hardcoded default layout - curated by author for optimal visualization
+    const DEFAULT_LAYOUT = {"estimate_feature_point":{"x":-779,"y":1024},"get_image":{"x":-1435,"y":761},"get_object_bbox":{"x":-789,"y":149},"get_position_from_labels":{"x":-783,"y":687},"naive_pointing":{"x":-789,"y":404},"rescan_wrist":{"x":-1460,"y":402},"scan_wrist":{"x":-1884,"y":562},"move_gripper_to":{"x":659,"y":575},"close_gripper":{"x":1187,"y":527},"open_gripper":{"x":-87,"y":506},"get_grasp_pose":{"x":429,"y":171},"plan_grasp":{"x":854,"y":169},"euler_to_rmat":{"x":198,"y":880},"measure_relative_rotation":{"x":-44,"y":862},"measure_vector":{"x":136,"y":1036},"rmat_to_euler":{"x":95,"y":808},"rotate_by":{"x":212,"y":767},"execute_with_pi05":{"x":-34,"y":99}};
+    
+    const workflows = [{"steps": ["scan_wrist", "get_image", "get_position_from_labels"], "count": 24, "label": "Scan Scene \u2192 Get Image \u2192 Gemini Pointing (24x)"}, {"steps": ["scan_wrist", "get_image", "get_position_from_labels", "open_gripper"], "count": 20, "label": "Scan Scene \u2192 Get Image \u2192 Gemini Pointing \u2192 Open Gripper (20x)"}, {"steps": ["scan_wrist", "get_image", "get_position_from_labels", "open_gripper", "get_grasp_pose", "move_gripper_to"], "count": 12, "label": "Scan Scene \u2192 Get Image \u2192 Gemini Pointing \u2192 Open Gripper \u2192 Grasp Generation \u2192 Move To (12x)"}, {"steps": ["scan_wrist", "get_image", "get_position_from_labels", "open_gripper", "move_gripper_to", "close_gripper"], "count": 8, "label": "Scan Scene \u2192 Get Image \u2192 Gemini Pointing \u2192 Open Gripper \u2192 Move To \u2192 Close Gripper (8x)"}, {"steps": ["scan_wrist", "get_image", "get_position_from_labels", "open_gripper", "get_grasp_pose", "move_gripper_to", "plan_grasp", "close_gripper"], "count": 7, "label": "Scan Scene \u2192 ... \u2192 Close Gripper (8 steps, 7x)"}, {"steps": ["scan_wrist", "get_image", "get_position_from_labels", "open_gripper", "get_grasp_pose", "move_gripper_to", "plan_grasp", "close_gripper", "move_gripper_to", "open_gripper"], "count": 6, "label": "Scan Scene \u2192 ... \u2192 Open Gripper (10 steps, 6x)"}, {"steps": ["scan_wrist", "get_image", "estimate_feature_point"], "count": 21, "label": "Scan Scene \u2192 Get Image \u2192 Keypoint Pointing (21x)"}, {"steps": ["scan_wrist", "get_image", "estimate_feature_point", "open_gripper"], "count": 13, "label": "Scan Scene \u2192 Get Image \u2192 Keypoint Pointing \u2192 Open Gripper (13x)"}, {"steps": ["scan_wrist", "get_image", "estimate_feature_point", "open_gripper", "move_gripper_to", "close_gripper"], "count": 7, "label": "Scan Scene \u2192 Get Image \u2192 Keypoint Pointing \u2192 Open Gripper \u2192 Move To \u2192 Close Gripper (7x)"}, {"steps": ["scan_wrist", "get_image", "naive_pointing", "get_object_bbox"], "count": 9, "label": "Scan Scene \u2192 Get Image \u2192 BBox Pointing \u2192 Get BBox (9x)"}, {"steps": ["scan_wrist", "get_image", "naive_pointing", "get_object_bbox", "open_gripper"], "count": 8, "label": "Scan Scene \u2192 Get Image \u2192 BBox Pointing \u2192 Get BBox \u2192 Open Gripper (8x)"}, {"steps": ["scan_wrist", "get_image", "naive_pointing", "get_object_bbox", "open_gripper", "move_gripper_to"], "count": 7, "label": "Scan Scene \u2192 Get Image \u2192 BBox Pointing \u2192 Get BBox \u2192 Open Gripper \u2192 Move To (7x)"}, {"steps": ["scan_wrist", "get_image", "execute_with_pi05"], "count": 5, "label": "Scan Scene \u2192 Get Image \u2192 VLA (\u03c00.5) (5x)"}];
+    const shortNames = {"estimate_feature_point": "Keypoint Pointing", "get_image": "Get Image", "get_object_bbox": "Get BBox", "get_position_from_labels": "Gemini Pointing", "naive_pointing": "BBox Pointing", "rescan_wrist": "Rescan Scene", "scan_wrist": "Scan Scene", "move_gripper_to": "Move To", "close_gripper": "Close Gripper", "open_gripper": "Open Gripper", "get_grasp_pose": "Grasp Generation", "plan_grasp": "Grasp Planning", "euler_to_rmat": "Euler\u2192RotMat", "measure_relative_rotation": "Measure Rotation", "measure_vector": "Measure Vector", "rmat_to_euler": "RotMat\u2192Euler", "rotate_by": "Rotate", "execute_with_pi05": "VLA (\u03c00.5)"};
+    
+    // Store original node/edge data for reset (prefixed to avoid pyvis conflicts)
+    let _savedNodes = [];
+    let _savedEdges = [];
+    let _isHighlighting = false;
+    
+    // Legend drag state
+    let legendDragging = false;
+    let legendOffsetX = 0, legendOffsetY = 0;
+    
+    function toggleControls() {
+        const panel = document.getElementById('controlPanel');
+        const btn = document.getElementById('showControlsBtn');
+        if (panel.style.display === 'none') {
+            panel.style.display = 'block';
+            btn.style.display = 'none';
+        } else {
+            panel.style.display = 'none';
+            btn.style.display = 'block';
+        }
+    }
+    
+    function toggleLegend() {
+        const panel = document.getElementById('legendPanel');
+        const btn = document.getElementById('showLegendBtn');
+        if (panel.style.display === 'none') {
+            panel.style.display = 'block';
+            btn.style.display = 'none';
+        } else {
+            panel.style.display = 'none';
+            btn.style.display = 'block';
+        }
+    }
+    
+    function startDragLegend(e) {
+        if (e.target.tagName === 'BUTTON') return;
+        legendDragging = true;
+        const panel = document.getElementById('legendPanel');
+        legendOffsetX = e.clientX - panel.offsetLeft;
+        legendOffsetY = e.clientY - panel.offsetTop;
+        document.addEventListener('mousemove', dragLegend);
+        document.addEventListener('mouseup', stopDragLegend);
+    }
+    
+    function dragLegend(e) {
+        if (!legendDragging) return;
+        const panel = document.getElementById('legendPanel');
+        panel.style.left = (e.clientX - legendOffsetX) + 'px';
+        panel.style.top = (e.clientY - legendOffsetY) + 'px';
+        panel.style.right = 'auto';
+    }
+    
+    function stopDragLegend() {
+        legendDragging = false;
+        document.removeEventListener('mousemove', dragLegend);
+        document.removeEventListener('mouseup', stopDragLegend);
+    }
+    
+    function saveLayout() {
+        const positions = {};
+        nodes.forEach(node => {
+            positions[node.id] = {
+                x: network.getPosition(node.id).x,
+                y: network.getPosition(node.id).y
+            };
+        });
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(positions));
+        
+        const status = document.getElementById('saveStatus');
+        status.textContent = '✓ Layout saved!';
+        status.style.display = 'block';
+        setTimeout(() => { status.style.display = 'none'; }, 2000);
+    }
+    
+    function resetToSaved() {
+        // Try localStorage first, then fall back to default layout
+        const saved = localStorage.getItem(STORAGE_KEY);
+        const positions = saved ? JSON.parse(saved) : DEFAULT_LAYOUT;
+        
+        nodes.forEach(node => {
+            if (positions[node.id]) {
+                network.moveNode(node.id, positions[node.id].x, positions[node.id].y);
+            }
+        });
+        network.fit();
+        
+        const status = document.getElementById('saveStatus');
+        status.textContent = saved ? '✓ Layout restored!' : '✓ Reset to default layout!';
+        status.style.display = 'block';
+        setTimeout(() => { status.style.display = 'none'; }, 2000);
+    }
+    
+    function highlightWorkflow() {
+        const select = document.getElementById('workflowSelect');
+        const idx = select.value;
+        const pathDiv = document.getElementById('workflowPath');
+        const stepsP = document.getElementById('workflowSteps');
+        
+        // Use pyvis's global 'nodes' and 'edges' DataSets directly
+        if (_savedNodes.length === 0) {
+            console.log('Saved data not ready');
+            return;
+        }
+        
+        // Reset to original state by clearing and re-adding all data
+        // Save current positions first
+        const positions = {};
+        nodes.forEach(node => {
+            const pos = network.getPosition(node.id);
+            positions[node.id] = { x: pos.x, y: pos.y };
+        });
+        
+        // Clear and restore original data
+        nodes.clear();
+        edges.clear();
+        nodes.add(_savedNodes.map(n => ({...n, x: positions[n.id]?.x, y: positions[n.id]?.y})));
+        edges.add(_savedEdges.map(e => ({...e})));
+        
+        if (idx === '') {
+            pathDiv.style.display = 'none';
+            _isHighlighting = false;
+            return;
+        }
+        
+        _isHighlighting = true;
+        const workflow = workflows[parseInt(idx)];
+        const steps = workflow.steps;
+        
+        // Show workflow path using short names (aliases)
+        pathDiv.style.display = 'block';
+        stepsP.innerHTML = steps.map((s, i) => {
+            const displayName = shortNames[s] || s;
+            const arrow = i < steps.length - 1 ? ' <span style="color: #10b981;">→</span> ' : '';
+            return `<span style="background: rgba(59,130,246,0.1); padding: 2px 6px; border-radius: 4px;">${displayName}</span>${arrow}`;
+        }).join('');
+        
+        // Dim all nodes not in workflow
+        const stepsSet = new Set(steps);
+        nodes.forEach(node => {
+            if (!stepsSet.has(node.id)) {
+                nodes.update({id: node.id, color: {background: 'rgba(100,100,100,0.3)', border: 'rgba(100,100,100,0.3)'}});
+            }
+        });
+        
+        // Dim all edges not in workflow
+        const workflowEdges = new Set();
+        for (let i = 0; i < steps.length - 1; i++) {
+            workflowEdges.add(steps[i] + '->' + steps[i + 1]);
+        }
+        edges.forEach(edge => {
+            const edgeKey = edge.from + '->' + edge.to;
+            if (workflowEdges.has(edgeKey)) {
+                edges.update({id: edge.id, color: {color: '#10b981'}, width: 4});
+            } else {
+                edges.update({id: edge.id, color: {color: 'rgba(100,100,100,0.15)'}, width: 0.5});
+            }
+        });
+    }
+    
+    // Load saved layout on page load
+    window.addEventListener('load', function() {
+        // Store original data using pyvis's global 'nodes' and 'edges' DataSets
+        setTimeout(function() {
+            // Deep copy original node and edge data for reset
+            nodes.forEach(node => {
+                _savedNodes.push(JSON.parse(JSON.stringify(node)));
+            });
+            edges.forEach(edge => {
+                _savedEdges.push(JSON.parse(JSON.stringify(edge)));
+            });
+            
+            // Load layout: first try localStorage (user's personal saved layout),
+            // then fall back to hardcoded DEFAULT_LAYOUT
+            const saved = localStorage.getItem(STORAGE_KEY);
+            const positions = saved ? JSON.parse(saved) : DEFAULT_LAYOUT;
+            
+            nodes.forEach(node => {
+                if (positions[node.id]) {
+                    network.moveNode(node.id, positions[node.id].x, positions[node.id].y);
+                }
+            });
+            network.fit();
+        }, 500);
+    });
+    </script>
+    </body>
+</html>

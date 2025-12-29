@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Robot Manipulation Passing Map Dashboard</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: white;
+            min-height: 100vh;
+            padding: 40px;
+        }
+        .container { max-width: 1200px; margin: 0 auto; }
+        h1 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, #60a5fa, #34d399);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .subtitle {
+            text-align: center;
+            color: #94a3b8;
+            margin-bottom: 40px;
+        }
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+        .stat {
+            text-align: center;
+            background: rgba(255,255,255,0.1);
+            padding: 20px 30px;
+            border-radius: 12px;
+        }
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #60a5fa;
+        }
+        .stat-label { color: #94a3b8; }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+        }
+        .card {
+            background: rgba(255,255,255,0.05);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+        .card a {
+            display: block;
+            text-decoration: none;
+            color: inherit;
+        }
+        .card-img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            background: #2a2a4a;
+        }
+        .card-body { padding: 20px; }
+        .card-title {
+            font-size: 1.2rem;
+            margin-bottom: 8px;
+            color: #f0f0f0;
+        }
+        .card-desc { color: #94a3b8; font-size: 0.9rem; }
+        .badge {
+            display: inline-block;
+            background: #3b82f6;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            margin-right: 5px;
+        }
+        .badge.interactive { background: #10b981; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🤖 Robot Manipulation Passing Map</h1>
+        <p class="subtitle">Function call flow analysis across manipulation trials</p>
+        
+        <div class="stats">
+            <div class="stat">
+                <div class="stat-value">62</div>
+                <div class="stat-label">Trials</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value">2062</div>
+                <div class="stat-label">Function Calls</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value">18</div>
+                <div class="stat-label">Unique Functions</div>
+            </div>
+        </div>
+        
+        <div class="grid">
+            <div class="card">
+                <a href="interactive_network.html">
+                    <div class="card-img" style="background: linear-gradient(45deg, #1a1a2e, #3b82f6);"></div>
+                    <div class="card-body">
+                        <span class="badge interactive">Interactive</span>
+                        <span class="badge">Network</span>
+                        <h3 class="card-title">Interactive Passing Map</h3>
+                        <p class="card-desc">Drag nodes freely, save your layout. Highlight common workflows.</p>
+                    </div>
+                </a>
+            </div>
+            
+            <div class="card">
+                <a href="interactive_heatmap.html">
+                    <div class="card-img" style="background: linear-gradient(45deg, #2a2a4a, #f59e0b);"></div>
+                    <div class="card-body">
+                        <span class="badge interactive">Interactive</span>
+                        <span class="badge">Heatmap</span>
+                        <h3 class="card-title">Transition Heatmap</h3>
+                        <p class="card-desc">View counts (log scale) or probability. Hover for details.</p>
+                    </div>
+                </a>
+            </div>
+            
+            <div class="card">
+                <a href="circular_flow.html">
+                    <div class="card-img" style="background: linear-gradient(45deg, #2a2a4a, #8b5cf6);"></div>
+                    <div class="card-body">
+                        <span class="badge interactive">Interactive</span>
+                        <span class="badge">Chord</span>
+                        <h3 class="card-title">Circular Flow</h3>
+                        <p class="card-desc">Chord-style diagram showing cyclic transition patterns.</p>
+                    </div>
+                </a>
+            </div>
+            
+            <div class="card">
+                <a href="summary_charts.png" target="_blank">
+                    <img class="card-img" src="summary_charts.png" alt="Summary">
+                    <div class="card-body">
+                        <span class="badge">Static</span>
+                        <h3 class="card-title">Summary Charts</h3>
+                        <p class="card-desc">Function frequencies, categories, and statistics.</p>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
