@@ -75,20 +75,4 @@ $(document).ready(function() {
 
     bulmaSlider.attach();
 
-    // Autoplay main concept video when section scrolls into view
-    var mainConceptSection = document.getElementById('main-concept-video');
-    var mainConceptVideo = document.getElementById('main-concept-video-player');
-    if (mainConceptSection && mainConceptVideo) {
-      var videoObserver = new IntersectionObserver(function(entries) {
-        entries.forEach(function(entry) {
-          if (entry.isIntersecting) {
-            mainConceptVideo.play().catch(function(e) {});
-          } else {
-            mainConceptVideo.pause();
-          }
-        });
-      }, { threshold: 0.4 });
-      videoObserver.observe(mainConceptSection);
-    }
-
 })
