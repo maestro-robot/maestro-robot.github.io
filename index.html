@@ -42,48 +42,34 @@
 </head>
 <body>
 
-<!-- <nav class="navbar" role="navigation" aria-label="main navigation">
+<nav class="navbar site-navbar is-fixed-top" role="navigation" aria-label="main navigation">
   <div class="navbar-brand">
-    <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+    <a class="navbar-item" href="#top">
+      <strong>Maestro</strong>
+    </a>
+    <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="siteNavbarMenu">
       <span aria-hidden="true"></span>
       <span aria-hidden="true"></span>
       <span aria-hidden="true"></span>
     </a>
   </div>
-  <div class="navbar-menu">
-    <div class="navbar-start" style="flex-grow: 1; justify-content: center;">
-      <a class="navbar-item" href="#">
-      <span class="icon">
-          <i class="fas fa-home"></i>
-      </span>
-      </a>
-
-      <!-- <div class="navbar-item has-dropdown is-hoverable">
-        <a class="navbar-link">
-          More Research
-        </a>
-        <div class="navbar-dropdown">
-          <a class="navbar-item" href="https://hypernerf.github.io">
-            HyperNeRF
-          </a>
-          <a class="navbar-item" href="https://nerfies.github.io">
-            Nerfies
-          </a>
-          <a class="navbar-item" href="https://latentfusion.github.io">
-            LatentFusion
-          </a>
-          <a class="navbar-item" href="https://photoshape.github.io">
-            PhotoShape
-          </a>
-        </div>
-      </div> -->
-  <!--  </div>
-
+  <div id="siteNavbarMenu" class="navbar-menu">
+    <div class="navbar-end">
+      <a class="navbar-item" href="#overview">Overview</a>
+      <a class="navbar-item" href="#abstract">Abstract</a>
+      <a class="navbar-item" href="#method">Method</a>
+      <a class="navbar-item" href="#videos">Videos</a>
+      <a class="navbar-item" href="#toolset">Toolset</a>
+      <a class="navbar-item" href="#system-prompt">System Prompt</a>
+      <a class="navbar-item" href="#evaluation">Evaluation</a>
+      <a class="navbar-item" href="#results">Results</a>
+      <a class="navbar-item" href="#vla">Maestro+VLA</a>
+      <a class="navbar-item" href="#data-collection">Data Collection</a>
+    </div>
   </div>
-</nav> -->
+</nav>
 
-
-<section class="hero">
+<section class="hero" id="top">
   <div class="hero-body">
     <div class="container is-max-desktop">
       <div class="columns is-centered">
@@ -232,7 +218,22 @@
   </div>
 </section>
 
-<section class="section">
+<section class="section" id="main-concept-video">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-full-width">
+        <div class="video-container">
+          <video id="main-concept-video-player" controls width="100%" style="border-radius: 10px;" playsinline autoplay muted loop>
+            <source src="./static/videos/concept_video.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+          </video>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="overview">
   <div class="container is-max-desktop">
     <!-- Overview. -->
     <div class="columns is-centered has-text-centered">
@@ -256,7 +257,7 @@
     </div>
   </div>
 </section>
-<section class="section">
+<section class="section" id="abstract">
   <div class="container is-max-desktop">
     <!-- Abstract. -->
     <div class="columns is-centered has-text-centered">
@@ -264,14 +265,14 @@
         <h2 class="title is-3">Abstract</h2>
         <div class="content has-text-justified">
           <p>
-            Today's best-explored routes towards generalist robots center on collecting ever larger "observations-in actions-out" robotics datasets to train large end-to-end models, copying a recipe that has worked for vision-language models (VLMs). We pursue a road less traveled: building generalist policies directly around VLMs by augmenting their general capabilities with specific robot capabilities encapsulated in a carefully curated set of perception, planning, and control modules. In Maestro, a VLM coding agent dynamically composes these modules into a programmatic policy for the current task and scenario. Maestro's architecture benefits from a streamlined closed-loop interface without many manually imposed structural constraints, and a comprehensive and diverse tool repertoire. As a result, it largely surpasses today's VLA models for zero-shot performance on challenging manipulation skills. Further, Maestro is easily extensible to incorporate new modules, easily editable to suit new embodiments such as a quadruped-mounted arm, and even easily adapts from minimal real-world experiences through local code edits.
+            Today's best-explored routes towards generalist robots center on collecting ever larger "observations-in actions-out" robotics datasets to train large end-to-end models, copying a recipe that has worked for vision-language models (VLMs). We pursue a road less traveled: building generalist policies directly around VLMs by augmenting their general capabilities with specific robot capabilities encapsulated in a carefully curated set of perception, planning, control, and learned policy modules, including vision-language-action (VLA) models. In Maestro, a VLM coding agent dynamically composes these modules into a programmatic policy for the current task and scenario. Maestro's architecture benefits from a streamlined closed-loop interface that grants the agent substantial autonomy to monitor, react, and replan without many manually imposed structural constraints, and a comprehensive and diverse tool repertoire. As a result, it achieves substantially stronger zero-shot performance than current general-purpose VLA models in challenging manipulation settings, particularly those underrepresented in their training data. Further, Maestro is easily extensible to incorporate new modules, easily editable to suit new embodiments such as a quadruped-mounted arm, and even easily adapts from minimal real-world experiences through local code edits. Maestro's autonomous real-world trajectories can additionally be leveraged to train fast and robust policies. Together, these results suggest that Maestro provides a practical path toward scaling autonomous robot deployment and data collection in diverse real-world settings.
         </div>
       </div>
     </div>
   </div>
 </section>
 
-<section class="section">
+<section class="section" id="method">
   <div class="container is-max-desktop">
     <!-- Method. -->
     <div class="columns is-centered has-text-centered">
@@ -292,7 +293,7 @@
 </section>
 
 <!-- Video Demonstrations Section -->
-<section class="section">
+<section class="section" id="videos">
   <div class="container is-max-desktop">
     <!-- Tabletop Videos -->
     <div class="columns is-centered has-text-centered">
@@ -442,7 +443,7 @@
   </div>
 </section>
 
-<section class="section">
+<section class="section" id="toolset">
   <div class="container is-max-desktop">
     <!-- Method. -->
     <div class="columns is-centered has-text-centered">
@@ -493,7 +494,7 @@
   </div>
 </section>
 
-<section class="section">
+<section class="section" id="system-prompt">
   <div class="container is-max-desktop">
     <!-- Method. -->
     <div class="columns is-centered has-text-centered">
@@ -512,7 +513,7 @@
   </div>
 </section>
 
-<section class="section">
+<section class="section" id="evaluation">
   <div class="container is-max-desktop">
     <!-- Star-Gen Generalization. -->
     <div class="columns is-centered has-text-centered">
@@ -533,7 +534,7 @@
 </section>
 
 <!-- Results Section -->
-<section class="section">
+<section class="section" id="results">
   <div class="container is-max-desktop">
     <div class="columns is-centered has-text-centered">
       <div class="column is-full-width">
@@ -549,7 +550,7 @@
             Maestro substantially outperforms all VLA and CaP baselines across challenging manipulation tasks. This success stems from combining the VLM's high-level semantic reasoning with specialized tools for low-level execution precision; while VLA models struggle with out-of-distribution scenarios (like articulated objects) and lack memory, Maestro remains robust and adaptable.          </p>
         </div>
         <figure class="image">
-          <img src="./static/images/franka_result_table.png">
+          <img src="./static/images/main_table_bar_plot.png">
         </figure>
         <br>
       </div>
@@ -578,7 +579,7 @@
 </section>
 
 <!-- Maestro+VLA Section -->
-<section class="section">
+<section class="section" id="vla">
   <div class="container is-max-desktop">
     <div class="columns is-centered has-text-centered">
       <div class="column is-full-width">
@@ -612,7 +613,7 @@
   </div>
 </section>
 
-<section class="section">
+<section class="section" id="data-collection">
   <div class="container is-max-desktop">
     <div class="columns is-centered has-text-centered">
       <div class="column is-full-width">
@@ -675,5 +676,25 @@
     </div>
 </footer>
 
+<script>
+  // Mobile navbar burger toggle
+  document.addEventListener('DOMContentLoaded', function() {
+    var burger = document.querySelector('.site-navbar .navbar-burger');
+    var menu = document.getElementById('siteNavbarMenu');
+    if (burger && menu) {
+      burger.addEventListener('click', function() {
+        burger.classList.toggle('is-active');
+        menu.classList.toggle('is-active');
+      });
+      // Close menu when a nav link is clicked (mobile)
+      menu.querySelectorAll('.navbar-item').forEach(function(item) {
+        item.addEventListener('click', function() {
+          burger.classList.remove('is-active');
+          menu.classList.remove('is-active');
+        });
+      });
+    }
+  });
+</script>
 </body>
 </html>

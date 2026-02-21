@@ -1,5 +1,84 @@
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   font-family: 'Noto Sans', sans-serif;
+  padding-top: 0;
+}
+
+/* Sticky site navigation – matches animation.html vibe (rounded, soft colors, smooth transitions) */
+.site-navbar {
+  font-family: 'Google Sans', 'Noto Sans', sans-serif;
+  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+  box-shadow: 0 2px 16px rgba(110, 163, 255, 0.08);
+  border-bottom: 1px solid rgba(110, 163, 255, 0.12);
+  padding: 0.5rem 1rem;
+  transition: box-shadow 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.site-navbar .navbar-brand .navbar-item {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #04004d;
+  border-radius: 12px;
+  padding: 0.5rem 1rem;
+  transition: all 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.site-navbar .navbar-brand .navbar-item:hover {
+  background: rgba(110, 163, 255, 0.12);
+  color: #6ea3ff;
+}
+
+.site-navbar .navbar-menu .navbar-item {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #363636;
+  border-radius: 20px;
+  padding: 0.4rem 0.85rem;
+  margin: 0 2px;
+  transition: all 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.site-navbar .navbar-menu .navbar-item:hover {
+  color: #04004d;
+}
+
+/* Each bubble has a distinct hover color (animation palette + extended harmonious colors) */
+.site-navbar .navbar-menu .navbar-item:nth-child(1):hover  { background: rgba(110, 163, 255, 0.28); }   /* Overview – blue */
+.site-navbar .navbar-menu .navbar-item:nth-child(2):hover  { background: rgba(103, 255, 182, 0.3); }    /* Abstract – green */
+.site-navbar .navbar-menu .navbar-item:nth-child(3):hover  { background: rgba(233, 255, 122, 0.5); }   /* Method – yellow */
+.site-navbar .navbar-menu .navbar-item:nth-child(4):hover  { background: rgba(246, 179, 92, 0.35); }   /* Videos – orange */
+.site-navbar .navbar-menu .navbar-item:nth-child(5):hover  { background: rgba(179, 136, 255, 0.28); }   /* Toolset – purple */
+.site-navbar .navbar-menu .navbar-item:nth-child(6):hover  { background: rgba(100, 255, 218, 0.3); }    /* System Prompt – teal */
+.site-navbar .navbar-menu .navbar-item:nth-child(7):hover  { background: rgba(255, 138, 128, 0.28); }   /* Evaluation – coral */
+.site-navbar .navbar-menu .navbar-item:nth-child(8):hover  { background: rgba(130, 224, 170, 0.35); }   /* Results – mint */
+.site-navbar .navbar-menu .navbar-item:nth-child(9):hover  { background: rgba(165, 214, 255, 0.4); }    /* Maestro+VLA – sky blue */
+.site-navbar .navbar-menu .navbar-item:nth-child(10):hover { background: rgba(255, 204, 128, 0.35); }  /* Data Collection – peach */
+
+/* Mobile menu – same vibe, stacked blocks */
+@media screen and (max-width: 1023px) {
+  .site-navbar .navbar-menu {
+    background: linear-gradient(180deg, #f8fafc 0%, #fff 100%);
+    border-radius: 0 0 12px 12px;
+    box-shadow: 0 8px 24px rgba(110, 163, 255, 0.1);
+    padding: 0.5rem 0;
+  }
+  .site-navbar .navbar-menu .navbar-item {
+    border-radius: 12px;
+    margin: 2px 8px;
+  }
+}
+
+/* Spacing between fixed navbar and first section (hero) */
+.hero#top {
+  padding-top: 4rem;
+}
+
+/* Scroll margin so fixed nav doesn't cover section headings */
+section[id] {
+  scroll-margin-top: 3.5rem;
 }
 
 
