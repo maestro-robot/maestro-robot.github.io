@@ -64,6 +64,7 @@
       <a class="navbar-item" href="#evaluation">Evaluation</a>
       <a class="navbar-item" href="#results">Results</a>
       <a class="navbar-item" href="#vla">Maestro+VLA</a>
+      <a class="navbar-item" href="#self-evolution">Self-Evolution</a>
       <a class="navbar-item" href="#data-collection">Data Collection</a>
       <a class="navbar-item" href="#bibtex">BibTeX</a>
     </div>
@@ -607,6 +608,28 @@
           </figure>
           </div>
         </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Self-Evolution Section -->
+<section class="section" id="self-evolution">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-full-width">
+        <h2 class="title is-3">Maestro Self-Evolution Across Trials</h2>
+        <div class="content has-text-justified">
+          <p>
+            Maestro can autonomously improve its generated policies through a self-evolution loop. After each trial, Gemini reviews the recorded execution video alongside its own code and reasoning trace, producing a structured reflection that diagnoses the root cause of any failure. This reflection is then provided as in-context guidance for the next trial, enabling the model to iteratively refine its approach without human intervention.
+          </p>
+          <p>
+            We demonstrate this on the open-cabinet task. In the initial trial, Maestro attempts a top-down grasp with a straight-line pull — failing to account for the door's hinge kinematics (35% progress). After reflecting on the video, it restructures its strategy entirely: estimating the hinge axis from door corner keypoints and generating a hinge-based arc trajectory, bringing progress to 70%. Subsequent evolutions introduce post-grasp stabilization to prevent handle slip (85%) and further refine the trajectory smoothness with more waypoints and incremental orientation tracking, ultimately achieving full task completion (100%). Across four autonomous trials, Maestro progresses from a naive linear pull to a kinematically grounded arc policy with robust grasp stabilization — all through video-grounded self-reflection.
+          </p>
+        </div>
+        <figure class="image">
+          <img src="./static/images/figure_code_evolution.png">
+        </figure>
       </div>
     </div>
   </div>
