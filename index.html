@@ -241,8 +241,15 @@
         <h2 class="title is-3">Overview of Maestro</h2>
         <div class="content has-text-justified">
           <p>
-            <strong>TLDR</strong>: We introduce <strong>Maestro</strong>, a VLM coding agent that composes diverse robotics-related tool modules into programmatic policies. Maestro represents <strong>the first competitive <em>modular</em> policy for generalist robot</strong>: its streamlined closed-loop interface and extensive tool repertoire allow it to largely surpass today's VLA models on challenging zero-shot manipulation tasks, while remaining interpretable, debuggable, and easily extended to new tools and robot embodiments. It can also improve from a handful of real-world trials via local code edits, and strategically employ VLA models as tools for both speed and performance.
+            <strong>TLDR</strong>: We introduce <strong>Maestro</strong>, a VLM coding agent that composes diverse robotics-related tool modules into programmatic policies. Maestro represents <strong>the first competitive <em>modular</em> policy for generalist robots</strong>:
           </p>
+          <ul style="text-align: left;">
+            <li>Achieves substantially stronger zero-shot performance than current general-purpose VLA models in challenging manipulation settings</li>
+            <li>Interpretable, debuggable, and easily extensible to new tools and robot embodiments</li>
+            <li>Improves from a handful of real-world trials via local code edits</li>
+            <li>Strategically employs VLA models as tools for both speed and performance</li>
+            <li>Enables fully autonomous data collection &mdash; generates high-quality seed demonstrations that, combined with data augmentation frameworks, produce policies rivaling those trained on human-collected data</li>
+          </ul>
         </div>
         <figure class="image">
           <img src="./static/images/maestro_concept.png">
@@ -666,11 +673,11 @@
         </div>
         <div class="content has-text-justified">
           <p>
-            We demonstrate Maestro's potential for autonomous data collection when integrated with <a href="https://willjhliang.github.io/tether-website/">Tether</a>. Tether provides a framework for warping a demonstration agent (in this case, Maestro) to enable continuous, autonomous task execution and subsequent data logging. The videos above illustrate Maestro operating within the Tether wrapper to successfully complete two distinct manipulation tasks. This closed-loop setup allows Maestro to run autonomously, generating high-quality, diverse data that can be used to further train and improve generalist robotic systems.          
+            Beyond serving as a zero-shot generalist policy, Maestro can also function as an autonomous data generator for downstream policy learning. We integrate Maestro with <a href="https://willjhliang.github.io/tether-website/">Tether</a>, a framework that amplifies a small set of seed demonstrations into large, diverse training datasets via correspondence-driven trajectory warping. Maestro autonomously generates seed demonstrations that Tether then warps, requiring <em>no human teleoperation</em>. On two benchmark tasks (<em>Bowl from Shelf</em> and <em>Wiping with Cloth</em>), Maestro + Tether achieves performance on par with human-teleoped Tether (e.g., 95% vs. 100% on Bowl from Shelf), while both significantly outperform &pi;<sub>0</sub> (zero-shot) and Diffusion Policy trained on human-teleoped data. This highlights Maestro's value as a scalable data engine that can produce policies rivaling those trained on human-collected data.
           </p>
         </div>
         <figure class="image">
-          <img src="./static/images/tether_graph.jpg">
+          <img src="./static/images/tether_graph.png">
         </figure>
 
       </div>
