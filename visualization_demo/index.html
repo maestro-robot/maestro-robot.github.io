@@ -378,7 +378,15 @@ async function init() {
     setSpeed(5);
     tryAutoplay();
   });
-  video.addEventListener('timeupdate', onTick);
+  video.addEventListener('timeupdate', () => {
+    onTick();
+    // Auto-replay: restart when near the end (handles cases where 'ended'
+    // doesn't fire reliably, e.g. GitHub Pages at high playback speeds).
+    if (video.duration && video.currentTime >= video.duration - 0.3) {
+      video.currentTime = 0;
+      video.play().catch(() => {});
+    }
+  });
   video.addEventListener('ended', () => {
     video.currentTime = 0;
     video.play().catch(() => {});
