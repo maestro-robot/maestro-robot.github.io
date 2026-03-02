@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Maestro &mdash; Robot Manipulation Dashboard</title>
+<style>
+/* ── Reset & Variables ── */
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+:root {
+  --bg:       #0d1117;
+  --surface:  #161b22;
+  --card:     #1c2333;
+  --border:   #30363d;
+  --text:     #e6edf3;
+  --text2:    #8b949e;
+  --accent:   #58a6ff;
+  --accent2:  #a371f7;
+  --green:    #3fb950;
+  --yellow:   #d29922;
+  --hl-bg:    rgba(56,139,253,0.12);
+  --sans:     -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
+  --mono:     'SF Mono', 'Fira Code', 'Cascadia Code', 'Consolas', 'Liberation Mono', Menlo, monospace;
+  --radius:   10px;
+}
+body {
+  font-family: var(--sans);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+/* Gradient accent line at top */
+body::before {
+  content: '';
+  position: fixed; top:0; left:0; right:0; height:2px; z-index:1000;
+  background: linear-gradient(90deg, var(--accent), var(--accent2), #f778ba, var(--accent2), var(--accent));
+  background-size: 200% 100%;
+  animation: grad-shift 4s linear infinite;
+}
+@keyframes grad-shift { to { background-position: -200% 0; } }
+
+/* ── Layout ── */
+.dash {
+  max-width: 1580px; margin:0 auto; padding:10px 12px 6px;
+  display: grid;
+  grid-template-rows: auto 1fr auto auto;
+  gap: 10px;
+  min-height: 100vh;
+}
+
+/* ── Top Bar ── */
+.top {
+  display: flex; align-items: center; gap:16px;
+  padding:8px 14px;
+  background: var(--surface); border:1px solid var(--border); border-radius: var(--radius);
+}
+.logo { font-size:1.6rem; font-weight:700; color:var(--accent); white-space:nowrap; letter-spacing:-0.02em; }
+.task { flex:1; font-size:1.5rem; font-weight:600; color:var(--text); line-height:1.3; text-align:center; }
+.task-text { color:var(--text); }
+.clock-box {
+  background: var(--bg);
+  border:1px solid var(--border);
+  border-radius:8px;
+  width:96px;
+  height:96px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+#clockCanvas {
+  width:82px;
+  height:82px;
+  display:block;
+}
+.speed-group { display:flex; gap:4px; }
+.speed-btn {
+  background:var(--bg); color:var(--text2); border:1px solid var(--border);
+  border-radius:6px; padding:4px 10px; font-size:0.72rem; font-family:var(--mono);
+  cursor:pointer; transition: all 0.15s;
+}
+.speed-btn:hover { border-color:var(--accent); color:var(--text); }
+.speed-btn.active { background:var(--accent); color:#fff; border-color:var(--accent); }
+
+/* ── Main Grid ── */
+.main {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap: 10px;
+  min-height: 0;          /* allow shrink */
+}
+
+/* ── Left Column ── */
+.left { display:flex; flex-direction:column; gap:10px; min-height:0; }
+.vid-wrap {
+  flex: 0 0 auto;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  max-height: 58vh;
+  background: #000; border-radius: var(--radius); overflow:hidden;
+  border:1px solid var(--border);
+  display:flex; align-items:center; justify-content:center;
+  min-height: 0;
+}
+.vid-wrap video { width:100%; height:100%; object-fit:contain; display:block; }
+
+.reason-card {
+  flex: 0 0 auto;
+  height: 235px;
+  background: var(--surface); border:1px solid var(--border); border-radius: var(--radius);
+  padding: 10px 14px;
+  display:flex; flex-direction:column;
+  overflow: hidden;
+}
+
+/* ── Right Column (Sidebar) ── */
+.right { display:flex; flex-direction:column; gap:10px; min-height:0; overflow:hidden; }
+
+/* ── Cards ── */
+.card {
+  background: var(--surface); border:1px solid var(--border); border-radius: var(--radius);
+  padding: 12px 16px;
+}
+.card-title {
+  font-size:0.78rem; text-transform:uppercase; letter-spacing:0.08em;
+  color: var(--accent); margin-bottom:8px; font-weight:700;
+  display:flex; align-items:center; gap:6px;
+}
+.card-title .icon { font-size:0.9rem; }
+
+/* Subtask */
+.sub-card { border-left:3px solid var(--accent); }
+.sub-text {
+  font-size:0.92rem; font-weight:600; color:var(--text); line-height:1.4;
+  transition: opacity 0.2s;
+}
+.sub-text.done { color:var(--green); font-size:1.1rem; }
+
+/* Code */
+.code-card {
+  flex: 1 1 0;
+  min-height: 0;
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+}
+.code-wrap {
+  flex: 1 1 0;
+  min-height: 0;
+  position: relative;
+  background:var(--bg);
+  border-radius:6px;
+  overflow-y:auto;
+  font-family:var(--mono); font-size:0.72rem; line-height:1.65;
+  scrollbar-width:thin; scrollbar-color: var(--border) transparent;
+}
+.cl {
+  display:block; padding:1px 10px 1px 46px; position:relative;
+  white-space:pre; transition: background 0.15s;
+  min-height: 1.65em;
+}
+.cl .ln {
+  position:absolute; left:0; width:38px; text-align:right; padding-right:8px;
+  color:var(--text2); opacity:0.4; user-select:none; font-size:0.68rem;
+}
+.cl.hl {
+  background: var(--hl-bg);
+  border-left:3px solid var(--accent);
+  padding-left:43px;
+}
+.cl.hl .ln { opacity:1; color:var(--accent); }
+@keyframes hl-flash { from{background:rgba(56,139,253,0.28)} to{background:var(--hl-bg)} }
+.cl.hl-new { animation: hl-flash 0.4s ease-out; }
+
+/* Function call */
+.func-bar {
+  margin-top:8px; padding:7px 12px;
+  background: rgba(63,185,80,0.06); border:1px solid rgba(63,185,80,0.15);
+  border-radius:6px; font-family:var(--mono); font-size:0.7rem; color:var(--green);
+  min-height:30px; display:flex; align-items:center; gap:8px;
+  transition: opacity 0.25s;
+}
+.func-dot {
+  width:7px; height:7px; border-radius:50%; background:var(--green); flex-shrink:0;
+  animation: pulse 1.5s infinite;
+}
+.func-bar.idle { opacity:0.35; }
+.func-bar.idle .func-dot { animation:none; background:var(--text2); }
+@keyframes pulse {
+  0%,100%{box-shadow:0 0 0 0 rgba(63,185,80,0.35)} 50%{box-shadow:0 0 0 5px rgba(63,185,80,0)}
+}
+
+/* Perception — fills remaining left-column space under video */
+.perc-card { flex:1 1 0; min-height:0; display:flex; flex-direction:column; overflow:hidden; }
+.perc-wrap {
+  flex:1; display:flex; align-items:center; justify-content:center;
+  min-height:0; position:relative;
+  overflow:hidden;
+  border-radius:6px;
+}
+.perc-wrap img {
+  width:100%; height:100%; border-radius:6px; object-fit:contain; object-position:center;
+  transition: opacity 0.3s;
+}
+.perc-none { color:var(--text2); font-size:0.78rem; font-style:italic; }
+
+/* Reasoning */
+.reason-title {
+  font-size:0.78rem; text-transform:uppercase; letter-spacing:0.08em;
+  color:var(--accent); margin-bottom:6px; font-weight:700;
+}
+.reason-text {
+  flex:1; font-size:0.8rem; color:var(--text2); line-height:1.55;
+  min-height:0;                /* allow shrink below content → enables overflow scroll */
+  overflow-y:auto; scrollbar-width:thin; scrollbar-color:var(--border) transparent;
+}
+
+/* ── Timeline ── */
+.timeline {
+  display:flex; align-items:center; gap:12px;
+  padding:6px 0;
+}
+.time-label { font-family:var(--mono); font-size:0.72rem; color:var(--text2); white-space:nowrap; }
+.prog-bar {
+  flex:1; height:12px; background:var(--border); border-radius:6px;
+  cursor:pointer; position:relative;
+  transition: height 0.15s, border-radius 0.15s;
+}
+.prog-bar:hover { height:16px; border-radius:8px; }
+.prog-fill {
+  height:100%; border-radius:inherit; width:0%;
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+  transition: width 0.08s linear;
+  pointer-events: none;
+}
+
+/* ── Syntax highlighting ── */
+.kw  { color:#ff7b72; }
+.bi  { color:#ffa657; }
+.st  { color:#a5d6ff; }
+.cm  { color:#8b949e; font-style:italic; }
+.nm  { color:#79c0ff; }
+.fn  { color:#d2a8ff; }
+
+/* ── Scrollbar (Webkit) ── */
+::-webkit-scrollbar { width:5px; }
+::-webkit-scrollbar-track { background:transparent; }
+::-webkit-scrollbar-thumb { background:var(--border); border-radius:3px; }
+::-webkit-scrollbar-thumb:hover { background:var(--text2); }
+
+/* ── Loading state ── */
+.loading {
+  display:flex; align-items:center; justify-content:center;
+  height:100vh; font-size:1.2rem; color:var(--text2);
+}
+.loading .spinner {
+  width:24px; height:24px; border:2px solid var(--border);
+  border-top-color:var(--accent); border-radius:50%;
+  animation: spin 0.8s linear infinite; margin-right:12px;
+}
+@keyframes spin { to{transform:rotate(360deg)} }
+</style>
+</head>
+<body>
+
+<div class="loading" id="loading">
+  <div class="spinner"></div> Loading visualization data&hellip;
+</div>
+
+<div class="dash" id="dash" style="display:none">
+  <!-- Top Bar -->
+  <div class="top">
+    <div class="task" id="task"><span class="logo">Maestro:</span> <span class="task-text"></span></div>
+    <div class="speed-group">
+      <button class="speed-btn active" onclick="setSpeed(1)">1&times;</button>
+      <button class="speed-btn" onclick="setSpeed(2)">2&times;</button>
+      <button class="speed-btn" onclick="setSpeed(5)">5&times;</button>
+      <button class="speed-btn" onclick="setSpeed(10)">10&times;</button>
+    </div>
+    <div class="clock-box"><canvas id="clockCanvas" width="82" height="82"></canvas></div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main">
+    <!-- Left: Video + Perception -->
+    <div class="left">
+      <div class="vid-wrap">
+        <video id="video" controls preload="metadata">
+          <source src="video_web.mp4" type="video/mp4">
+        </video>
+      </div>
+      <div class="card perc-card">
+        <div class="card-title"><span class="icon">&#128269;</span> Perception Output</div>
+        <div class="perc-wrap">
+          <img id="percImg" style="display:none" alt="Perception">
+          <div class="perc-none" id="percNone">No perception output yet</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Dashboard Panels -->
+    <div class="right">
+      <div class="card sub-card">
+        <div class="card-title"><span class="icon">&#9654;</span> Current Subtask</div>
+        <div class="sub-text" id="subtask">Initializing&hellip;</div>
+      </div>
+
+      <div class="card code-card">
+        <div class="card-title"><span class="icon">&#60;/&#62;</span> Code Execution</div>
+        <div class="code-wrap" id="codeWrap"></div>
+        <div class="func-bar idle" id="funcBar">
+          <div class="func-dot"></div>
+          <span id="funcText">Idle</span>
+        </div>
+      </div>
+
+      <div class="reason-card">
+        <div class="reason-title" id="reasonTitle">Scene Description</div>
+        <div class="reason-text" id="reasonText"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Timeline -->
+  <div class="timeline">
+    <span class="time-label" id="timeNow">0:00</span>
+    <div class="prog-bar" id="progBar">
+      <div class="prog-fill" id="progFill"></div>
+    </div>
+    <span class="time-label" id="timeTotal">0:00</span>
+  </div>
+</div>
+
+<script>
+/* ══════════════════════════════════════════════════════════════════
+   Maestro Dashboard — JavaScript
+   ══════════════════════════════════════════════════════════════════ */
+
+let D = null;           // loaded data
+let video = null;
+let lastStep = null;
+let lastLine = null;
+let lastPerc = '';
+let autoScroll = true;
+let scrollTimer = null;
+let currentElapsed = 0;
+
+// ── Python keywords for syntax highlighting ──
+const KW = new Set(['import','from','as','def','class','if','elif','else','for','while',
+  'return','try','except','with','assert','and','or','not','in','is','lambda','yield',
+  'break','continue','pass','raise','global','nonlocal','del']);
+const BI = new Set(['print','range','len','int','float','str','list','dict','set','tuple',
+  'True','False','None','np','robot','image_editor','object_positions','all']);
+
+// ── Init ──
+async function init() {
+  try {
+    const resp = await fetch('data.json');
+    D = await resp.json();
+  } catch(e) {
+    document.getElementById('loading').innerHTML =
+      '<span style="color:#f85149">Failed to load data.json &mdash; serve this directory with a local server.</span>';
+    return;
+  }
+
+  document.getElementById('loading').style.display = 'none';
+  document.getElementById('dash').style.display = '';
+
+  document.querySelector('.task-text').textContent = D.meta.task;
+  video = document.getElementById('video');
+
+  video.addEventListener('loadedmetadata', () => {
+    document.getElementById('timeTotal').textContent = fmtTime(video.duration);
+  });
+  video.addEventListener('timeupdate', onTick);
+  video.addEventListener('seeked', onTick);
+
+  // Detect MANUAL scroll only via wheel/touch — never fires from programmatic scrollTop
+  const codeWrap = document.getElementById('codeWrap');
+  codeWrap.addEventListener('wheel', () => {
+    autoScroll = false;
+    clearTimeout(scrollTimer);
+    scrollTimer = setTimeout(() => { autoScroll = true; }, 2500);
+  }, {passive:true});
+  codeWrap.addEventListener('touchstart', () => {
+    autoScroll = false;
+    clearTimeout(scrollTimer);
+    scrollTimer = setTimeout(() => { autoScroll = true; }, 2500);
+  }, {passive:true});
+
+  // Timeline click to seek
+  const progBar = document.getElementById('progBar');
+  progBar.addEventListener('click', e => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!video.duration || video.readyState < 1) return;
+    const rect = progBar.getBoundingClientRect();
+    // Clamp ratio between 0 and 1
+    const ratio = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+    const targetTime = ratio * video.duration;
+    // Pause briefly, seek, then resume if was playing
+    const wasPlaying = !video.paused;
+    video.pause();
+    video.currentTime = targetTime;
+    if (wasPlaying) {
+      video.play().catch(() => {});
+    }
+    onTick(); // Force immediate UI update
+  });
+
+  // Keyboard controls
+  document.addEventListener('keydown', e => {
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+    if (e.code === 'Space') { e.preventDefault(); video.paused ? video.play() : video.pause(); }
+    if (e.code === 'ArrowLeft')  { video.currentTime = Math.max(0, video.currentTime - 5); }
+    if (e.code === 'ArrowRight') { video.currentTime = Math.min(video.duration, video.currentTime + 5); }
+  });
+
+  // Initial render
+  onTick();
+}
+
+function setSpeed(rate) {
+  if (video) video.playbackRate = rate;
+  document.querySelectorAll('.speed-btn').forEach(b => {
+    b.classList.toggle('active', parseFloat(b.textContent) === rate);
+  });
+}
+
+// ── Find keyframe via binary search ──
+function findKF(elapsed) {
+  const kfs = D.keyframes;
+  let lo = 0, hi = kfs.length - 1, best = 0;
+  while (lo <= hi) {
+    const mid = (lo + hi) >> 1;
+    if (kfs[mid].t <= elapsed) { best = mid; lo = mid + 1; }
+    else { hi = mid - 1; }
+  }
+  return kfs[best];
+}
+
+// ── Main tick ──
+function onTick() {
+  if (!D || !video) return;
+  const elapsed = (video.currentTime || 0) * D.meta.timeScale;
+  currentElapsed = elapsed;
+  const kf = findKF(elapsed);
+  if (!kf) return;
+
+  // Subtask
+  const subEl = document.getElementById('subtask');
+  subEl.textContent = kf.sub;
+  subEl.className = kf.sub === 'Done!' ? 'sub-text done' : 'sub-text';
+
+  // Code
+  updateCode(kf);
+  if (autoScroll) centerOnCurrentLine();
+
+  // Function call
+  const funcBar = document.getElementById('funcBar');
+  const funcText = document.getElementById('funcText');
+  if (kf.func) {
+    funcBar.className = 'func-bar';
+    funcText.textContent = kf.func;
+  } else {
+    funcBar.className = 'func-bar idle';
+    funcText.textContent = 'Idle';
+  }
+
+  // Perception
+  updatePerception(kf);
+
+  // Reasoning
+  const rTitle = document.getElementById('reasonTitle');
+  const rText = document.getElementById('reasonText');
+  if (kf.sd && D.meta.describeScene) {
+    rTitle.textContent = 'Scene Description';
+    rText.textContent = D.meta.describeScene;
+  } else {
+    rTitle.textContent = 'Reasoning & Planning';
+    rText.textContent = D.reasonTexts[kf.ri] || '';
+  }
+
+  // Clock
+  drawAnalogClock(elapsed);
+
+  // Timeline
+  if (video.duration) {
+    const pct = (video.currentTime / video.duration) * 100;
+    document.getElementById('progFill').style.width = pct + '%';
+    document.getElementById('timeNow').textContent = fmtTime(video.currentTime);
+  }
+}
+
+// ── Code rendering ──
+function updateCode(kf) {
+  const step = kf.step;
+
+  // Re-render code block if step changed
+  if (step !== lastStep) {
+    lastStep = step;
+    lastLine = null;
+    const wrap = document.getElementById('codeWrap');
+    if (step !== null && D.codeBlocks[String(step)]) {
+      const lines = D.codeBlocks[String(step)].split('\n');
+      wrap.innerHTML = lines.map((ln, i) =>
+        '<div class="cl" id="L' + i + '">' +
+        '<span class="ln">' + (i+1) + '</span>' +
+        hlLine(ln) +
+        '</div>'
+      ).join('');
+    } else {
+      wrap.innerHTML = '<div style="padding:20px;color:var(--text2)">No code to display</div>';
+    }
+  }
+
+  // Update highlight
+  const line = kf.line;
+  if (line !== lastLine) {
+    if (lastLine !== null && lastLine >= 0) {
+      const old = document.getElementById('L' + lastLine);
+      if (old) { old.classList.remove('hl','hl-new'); }
+    }
+    if (line >= 0) {
+      const el = document.getElementById('L' + line);
+      if (el) {
+        el.classList.add('hl', 'hl-new');
+      }
+    }
+    lastLine = line;
+  }
+}
+
+function centerOnCurrentLine() {
+  if (lastLine === null || lastLine < 0) return;
+  const wrap = document.getElementById('codeWrap');
+  const el = document.getElementById('L' + lastLine);
+  if (!wrap || !el) return;
+  // getBoundingClientRect is bulletproof — no offsetParent ambiguity
+  const wrapRect = wrap.getBoundingClientRect();
+  const elRect = el.getBoundingClientRect();
+  const offset = (elRect.top + elRect.height / 2) - (wrapRect.top + wrapRect.height / 2);
+  wrap.scrollTop += offset;
+}
+
+// ── Perception ──
+function updatePerception(kf) {
+  let src = '';
+  if (kf.ptr)       src = 'images/pointing_' + kf.ptr + '.png';
+  else if (kf.img)  src = 'images/' + kf.img;
+
+  if (src === lastPerc) return;
+  lastPerc = src;
+
+  const img = document.getElementById('percImg');
+  const none = document.getElementById('percNone');
+  if (src) {
+    img.src = src;
+    img.style.display = 'block';
+    none.style.display = 'none';
+  } else {
+    img.style.display = 'none';
+    none.style.display = 'block';
+  }
+}
+
+// ── Syntax highlighting (line-level) ──
+function hlLine(raw) {
+  let out = '', i = 0;
+  const s = raw;
+  while (i < s.length) {
+    // Comment
+    if (s[i] === '#') { out += '<span class="cm">' + esc(s.substring(i)) + '</span>'; break; }
+    // Strings
+    if (s[i] === "'" || s[i] === '"') {
+      const q = s[i]; let j = i + 1;
+      while (j < s.length && s[j] !== q) { if (s[j]==='\\') j++; j++; }
+      j = Math.min(j+1, s.length);
+      out += '<span class="st">' + esc(s.substring(i,j)) + '</span>';
+      i = j; continue;
+    }
+    // Words
+    if (/[a-zA-Z_]/.test(s[i])) {
+      let j = i; while (j < s.length && /[a-zA-Z0-9_]/.test(s[j])) j++;
+      const w = s.substring(i, j);
+      // Check if followed by ( => function call
+      const isCall = j < s.length && s[j] === '(';
+      if (KW.has(w))      out += '<span class="kw">' + w + '</span>';
+      else if (BI.has(w)) out += '<span class="bi">' + w + '</span>';
+      else if (isCall)    out += '<span class="fn">' + esc(w) + '</span>';
+      else                out += esc(w);
+      i = j; continue;
+    }
+    // Numbers
+    if (/[0-9]/.test(s[i])) {
+      let j = i; while (j < s.length && /[0-9.eE\-+]/.test(s[j])) j++;
+      out += '<span class="nm">' + esc(s.substring(i,j)) + '</span>';
+      i = j; continue;
+    }
+    out += esc(s[i]); i++;
+  }
+  return out;
+}
+
+function esc(t) { return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function fmtTime(sec) {
+  const m = Math.floor(sec/60), s = Math.floor(sec%60);
+  return m + ':' + String(s).padStart(2,'0');
+}
+
+function drawAnalogClock(elapsed) {
+  const canvas = document.getElementById('clockCanvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const w = canvas.width, h = canvas.height;
+  const cx = w / 2, cy = h / 2;
+  const r = Math.min(w, h) / 2 - 2;
+
+  // Current time from experiment start + elapsed
+  let t = new Date();
+  if (D.meta.startTime) {
+    const start = new Date(D.meta.startTime);
+    t = new Date(start.getTime() + elapsed * 1000);
+  }
+
+  ctx.clearRect(0, 0, w, h);
+
+  // Face
+  ctx.beginPath();
+  ctx.arc(cx, cy, r, 0, Math.PI * 2);
+  ctx.fillStyle = '#0d1117';
+  ctx.fill();
+  ctx.lineWidth = 1.5;
+  ctx.strokeStyle = '#30363d';
+  ctx.stroke();
+
+  // Ticks
+  for (let i = 0; i < 12; i++) {
+    const a = (i / 12) * Math.PI * 2;
+    const x1 = cx + Math.sin(a) * (r - 5);
+    const y1 = cy - Math.cos(a) * (r - 5);
+    const x2 = cx + Math.sin(a) * (r - 1.5);
+    const y2 = cy - Math.cos(a) * (r - 1.5);
+    ctx.beginPath();
+    ctx.moveTo(x1, y1);
+    ctx.lineTo(x2, y2);
+    ctx.strokeStyle = '#8b949e';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+  }
+
+  const sec = t.getSeconds() + t.getMilliseconds() / 1000;
+  const min = t.getMinutes() + sec / 60;
+  const hr = (t.getHours() % 12) + min / 60;
+
+  const sAng = (sec / 60) * Math.PI * 2;
+  const mAng = (min / 60) * Math.PI * 2;
+  const hAng = (hr / 12) * Math.PI * 2;
+
+  // Hour hand
+  ctx.beginPath();
+  ctx.moveTo(cx, cy);
+  ctx.lineTo(cx + Math.sin(hAng) * (r * 0.45), cy - Math.cos(hAng) * (r * 0.45));
+  ctx.strokeStyle = '#e6edf3';
+  ctx.lineWidth = 2.4;
+  ctx.stroke();
+
+  // Minute hand
+  ctx.beginPath();
+  ctx.moveTo(cx, cy);
+  ctx.lineTo(cx + Math.sin(mAng) * (r * 0.7), cy - Math.cos(mAng) * (r * 0.7));
+  ctx.strokeStyle = '#58a6ff';
+  ctx.lineWidth = 1.9;
+  ctx.stroke();
+
+  // Second hand
+  ctx.beginPath();
+  ctx.moveTo(cx, cy);
+  ctx.lineTo(cx + Math.sin(sAng) * (r * 0.82), cy - Math.cos(sAng) * (r * 0.82));
+  ctx.strokeStyle = '#f778ba';
+  ctx.lineWidth = 1.1;
+  ctx.stroke();
+
+  ctx.beginPath();
+  ctx.arc(cx, cy, 2.2, 0, Math.PI * 2);
+  ctx.fillStyle = '#58a6ff';
+  ctx.fill();
+}
+
+document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>

@@ -34,6 +34,65 @@
   <link rel="stylesheet" href="./static/css/index.css">
   <link rel="icon" href="./static/images/Maestro.ico">
 
+  <!-- Visualization Demo Embed Styles -->
+  <style>
+    .vis-demo-container {
+      position: relative;
+      width: 100%;
+      height: 75vh;
+      min-height: 550px;
+      max-height: 900px;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.25), 0 2px 8px rgba(0,0,0,0.15);
+      background: #0d1117;
+      border: 1px solid #30363d;
+      transition: all 0.3s ease;
+    }
+    .vis-demo-container iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+    /* Fullscreen mode */
+    .vis-demo-container.is-fullscreen {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw;
+      height: 100vh;
+      max-height: none;
+      min-height: unset;
+      z-index: 9999;
+      border-radius: 0;
+    }
+    .vis-demo-close-btn {
+      display: none;
+      position: fixed;
+      top: 16px; right: 16px;
+      z-index: 10000;
+      background: rgba(13, 17, 23, 0.85);
+      color: #e6edf3;
+      border: 1px solid #30363d;
+      border-radius: 8px;
+      padding: 8px 16px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 600;
+      backdrop-filter: blur(8px);
+      transition: background 0.2s, border-color 0.2s;
+    }
+    .vis-demo-close-btn:hover {
+      background: rgba(88, 166, 255, 0.2);
+      border-color: #58a6ff;
+    }
+    .vis-demo-container.is-fullscreen ~ .vis-demo-close-btn {
+      display: block;
+    }
+    @media screen and (max-width: 768px) {
+      .vis-demo-container { height: 60vh; min-height: 400px; }
+    }
+  </style>
+
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <script defer src="./static/js/fontawesome.all.min.js"></script>
   <script src="./static/js/bulma-carousel.min.js"></script>
@@ -58,6 +117,7 @@
       <a class="navbar-item" href="#overview">Overview</a>
       <a class="navbar-item" href="#abstract">Abstract</a>
       <a class="navbar-item" href="#method">Method</a>
+      <a class="navbar-item" href="#visualization-demo">Agent Dashboard</a>
       <a class="navbar-item" href="#videos">Videos</a>
       <a class="navbar-item" href="#toolset">Toolset</a>
       <a class="navbar-item" href="#system-prompt">System Prompt</a>
@@ -275,6 +335,7 @@
     </div>
   </div>
 </section>
+
 <section class="section" id="abstract">
   <div class="container is-max-desktop">
     <!-- Abstract. -->
@@ -285,6 +346,39 @@
           <p>
             Today's best-explored routes towards generalist robots center on collecting ever larger "observations-in actions-out" robotics datasets to train large end-to-end models, copying a recipe that has worked for vision-language models (VLMs). We pursue a road less traveled: building generalist policies directly around VLMs by augmenting their general capabilities with specific robot capabilities encapsulated in a carefully curated set of perception, planning, control, and learned policy modules, including vision-language-action (VLA) models. In Maestro, a VLM coding agent dynamically composes these modules into a programmatic policy for the current task and scenario. Maestro's architecture benefits from a streamlined closed-loop interface that grants the agent substantial autonomy to monitor, react, and replan without many manually imposed structural constraints, and a comprehensive and diverse tool repertoire. As a result, it achieves substantially stronger zero-shot performance than current general-purpose VLA models in challenging manipulation settings, particularly those underrepresented in their training data. Further, Maestro is easily extensible to incorporate new modules, easily editable to suit new embodiments such as a quadruped-mounted arm, and even easily adapts from minimal real-world experiences through local code edits. Maestro's autonomous real-world trajectories can additionally be leveraged to train fast and robust policies. Together, these results suggest that Maestro provides a practical path toward scaling autonomous robot deployment and data collection in diverse real-world settings.
         </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Interactive Agent Dashboard -->
+<section class="section" id="visualization-demo">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-full-width">
+        <h2 class="title is-3">Interactive Agent Dashboard</h2>
+        <div class="content has-text-justified">
+          <p>
+            To provide full transparency into Maestro's decision-making process, we present an <strong>interactive agent dashboard</strong> that replays a complete robot manipulation trial in real time.
+            As the task progresses, the dashboard simultaneously reveals every layer of the system: the <strong>subtask progression</strong> through the overall plan, the VLM agent's <strong>reasoning and planning</strong> traces, the <strong>live code</strong> being generated and executed line-by-line, and <strong>perception outputs</strong> produced by the invoked tool modules. All panels stay tightly synchronized with the task timeline, offering a comprehensive view of how Maestro orchestrates diverse modules to solve complex manipulation tasks.
+          </p>
+        </div>
+
+        <div class="mb-4">
+          <button class="button is-medium is-rounded is-dark" id="fullscreenBtn">
+            <span class="icon"><i class="fas fa-expand"></i></span>
+            <span>Expand to Fullscreen</span>
+          </button>
+        </div>
+
+        <div class="vis-demo-container" id="visDemoContainer">
+          <iframe src="./visualization_demo/index.html"
+                  title="Maestro Interactive Agent Dashboard"
+                  allowfullscreen loading="lazy"></iframe>
+        </div>
+        <button class="vis-demo-close-btn" id="visDemoCloseBtn">
+          <i class="fas fa-times"></i>&ensp;Close
+        </button>
       </div>
     </div>
   </div>
@@ -709,23 +803,51 @@
 </footer>
 
 <script>
-  // Mobile navbar burger toggle
-  document.addEventListener('DOMContentLoaded', function() {
+  document.addEventListener('DOMContentLoaded', function () {
+    // ── Mobile navbar burger toggle ──
     var burger = document.querySelector('.site-navbar .navbar-burger');
     var menu = document.getElementById('siteNavbarMenu');
     if (burger && menu) {
-      burger.addEventListener('click', function() {
+      burger.addEventListener('click', function () {
         burger.classList.toggle('is-active');
         menu.classList.toggle('is-active');
       });
-      // Close menu when a nav link is clicked (mobile)
-      menu.querySelectorAll('.navbar-item').forEach(function(item) {
-        item.addEventListener('click', function() {
+      menu.querySelectorAll('.navbar-item').forEach(function (item) {
+        item.addEventListener('click', function () {
           burger.classList.remove('is-active');
           menu.classList.remove('is-active');
         });
       });
     }
+
+    // ── Visualization Demo fullscreen toggle ──
+    var container = document.getElementById('visDemoContainer');
+    var fsBtn     = document.getElementById('fullscreenBtn');
+    var closeBtn  = document.getElementById('visDemoCloseBtn');
+
+    function setVisDemoFullscreen(on) {
+      container.classList.toggle('is-fullscreen', on);
+      document.body.style.overflow = on ? 'hidden' : '';
+      fsBtn.innerHTML = on
+        ? '<span class="icon"><i class="fas fa-compress"></i></span><span>Exit Fullscreen</span>'
+        : '<span class="icon"><i class="fas fa-expand"></i></span><span>Expand to Fullscreen</span>';
+    }
+
+    if (fsBtn && container) {
+      fsBtn.addEventListener('click', function () {
+        setVisDemoFullscreen(!container.classList.contains('is-fullscreen'));
+      });
+    }
+    if (closeBtn) {
+      closeBtn.addEventListener('click', function () {
+        setVisDemoFullscreen(false);
+      });
+    }
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && container && container.classList.contains('is-fullscreen')) {
+        setVisDemoFullscreen(false);
+      }
+    });
   });
 </script>
 </body>
