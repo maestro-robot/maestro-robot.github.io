@@ -272,9 +272,9 @@ body::before {
   <div class="top">
     <div class="task" id="task"><span class="logo">Maestro:</span> <span class="task-text"></span></div>
     <div class="speed-group">
-      <button class="speed-btn active" onclick="setSpeed(1)">1&times;</button>
+      <button class="speed-btn" onclick="setSpeed(1)">1&times;</button>
       <button class="speed-btn" onclick="setSpeed(2)">2&times;</button>
-      <button class="speed-btn" onclick="setSpeed(5)">5&times;</button>
+      <button class="speed-btn active" onclick="setSpeed(5)">5&times;</button>
       <button class="speed-btn" onclick="setSpeed(10)">10&times;</button>
     </div>
     <div class="clock-box"><canvas id="clockCanvas" width="82" height="82"></canvas></div>
@@ -285,7 +285,7 @@ body::before {
     <!-- Left: Video + Perception -->
     <div class="left">
       <div class="vid-wrap">
-        <video id="video" controls preload="metadata">
+        <video id="video" controls preload="auto" muted playsinline>
           <source src="video_web.mp4" type="video/mp4">
         </video>
       </div>
@@ -374,6 +374,11 @@ async function init() {
   });
   video.addEventListener('timeupdate', onTick);
   video.addEventListener('seeked', onTick);
+
+  // Autoplay from the beginning at 5× speed
+  video.currentTime = 0;
+  setSpeed(5);
+  video.play().catch(() => {});
 
   // Detect MANUAL scroll only via wheel/touch — never fires from programmatic scrollTop
   const codeWrap = document.getElementById('codeWrap');
