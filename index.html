@@ -259,7 +259,18 @@
           <p>
             <strong>Maestro</strong> receives language instruction and leverages a set of tools to complete diverse tasks in a zero-shot setting.
           </p>
-        </div>  
+        </div>
+        <br>
+        <div id="method"></div>
+        <figure class="image">
+          <img src="./static/images/maestro_method.png">
+        </figure>
+        <br>
+        <div class="content has-text-justified">
+          <p>
+            Given prompt and images, VLM plans by writing and executing code that integrates perception, spatial reasoning, control, learned visuomotor policies, and image editing. Execution results (images and stdout) provide feedback for reacting and replanning, forming a closed-loop perception–action–learning cycle. This enables adaptive long-horizon manipulation, as illustrated in the tabletop example on the right (instruction: Grasp the knife by the handle and cut the banana in the middle).
+          </p>
+        </div>
       </div>
     </div>
   </div>
@@ -273,26 +284,6 @@
         <div class="content has-text-justified">
           <p>
             Today's best-explored routes towards generalist robots center on collecting ever larger "observations-in actions-out" robotics datasets to train large end-to-end models, copying a recipe that has worked for vision-language models (VLMs). We pursue a road less traveled: building generalist policies directly around VLMs by augmenting their general capabilities with specific robot capabilities encapsulated in a carefully curated set of perception, planning, control, and learned policy modules, including vision-language-action (VLA) models. In Maestro, a VLM coding agent dynamically composes these modules into a programmatic policy for the current task and scenario. Maestro's architecture benefits from a streamlined closed-loop interface that grants the agent substantial autonomy to monitor, react, and replan without many manually imposed structural constraints, and a comprehensive and diverse tool repertoire. As a result, it achieves substantially stronger zero-shot performance than current general-purpose VLA models in challenging manipulation settings, particularly those underrepresented in their training data. Further, Maestro is easily extensible to incorporate new modules, easily editable to suit new embodiments such as a quadruped-mounted arm, and even easily adapts from minimal real-world experiences through local code edits. Maestro's autonomous real-world trajectories can additionally be leveraged to train fast and robust policies. Together, these results suggest that Maestro provides a practical path toward scaling autonomous robot deployment and data collection in diverse real-world settings.
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section class="section" id="method">
-  <div class="container is-max-desktop">
-    <!-- Method. -->
-    <div class="columns is-centered has-text-centered">
-      <div class="column is-full-width">
-        <h2 class="title is-3">Overview of Maestro</h2>
-        <figure class="image">
-          <img src="./static/images/maestro_method.png">
-        </figure>
-        <br>
-        <div class="content has-text-justified">
-          <p>
-            Given prompt and images, VLM plans by writing and executing code that integrates perception, spatial reasoning, control, learned visuomotor policies, and image editing. Execution results (images and stdout) provide feedback for reacting and replanning, forming a closed-loop perception–action–learning cycle. This enables adaptive long-horizon manipulation, as illustrated in the tabletop example on the right (instruction: Grasp the knife by the handle and cut the banana in the middle).
-          </p>
         </div>
       </div>
     </div>
