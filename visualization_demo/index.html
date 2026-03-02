@@ -27,8 +27,8 @@ body {
   font-family: var(--sans);
   background: var(--bg);
   color: var(--text);
-  min-height: 100vh;
-  overflow-x: hidden;
+  height: 100vh;
+  overflow: hidden;
 }
 /* Gradient accent line at top */
 body::before {
@@ -42,11 +42,12 @@ body::before {
 
 /* ── Layout ── */
 .dash {
-  max-width: 1580px; margin:0 auto; padding:10px 12px 6px;
+  width: 1580px; padding:10px 12px 6px;
   display: grid;
-  grid-template-rows: auto 1fr auto auto;
+  grid-template-rows: auto 1fr auto;
   gap: 10px;
-  min-height: 100vh;
+  height: 920px;
+  transform-origin: top left;
 }
 
 /* ── Top Bar ── */
@@ -96,7 +97,7 @@ body::before {
   flex: 0 0 auto;
   width: 100%;
   aspect-ratio: 16 / 9;
-  max-height: 58vh;
+  max-height: 480px;
   background: #000; border-radius: var(--radius); overflow:hidden;
   border:1px solid var(--border);
   display:flex; align-items:center; justify-content:center;
@@ -366,6 +367,7 @@ async function init() {
 
   document.getElementById('loading').style.display = 'none';
   document.getElementById('dash').style.display = '';
+  scaleDash();
 
   document.querySelector('.task-text').textContent = D.meta.task;
   video = document.getElementById('video');
@@ -721,7 +723,22 @@ function drawAnalogClock(elapsed) {
   ctx.fill();
 }
 
-document.addEventListener('DOMContentLoaded', init);
+// ── Uniform scaling — scale the fixed-size dashboard to fit any viewport ──
+function scaleDash() {
+  const dash = document.getElementById('dash');
+  if (!dash || dash.style.display === 'none') return;
+  const sx = window.innerWidth / 1580;
+  const sy = window.innerHeight / 920;
+  const s = Math.min(sx, sy);
+  dash.style.transform = 'scale(' + s + ')';
+  dash.style.marginLeft = ((window.innerWidth - 1580 * s) / 2) + 'px';
+}
+window.addEventListener('resize', scaleDash);
+
+document.addEventListener('DOMContentLoaded', () => {
+  init();
+  scaleDash();
+});
 </script>
 </body>
 </html>

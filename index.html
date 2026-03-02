@@ -39,9 +39,7 @@
     .vis-demo-container {
       position: relative;
       width: 100%;
-      height: 92vh;
-      min-height: 680px;
-      max-height: 1100px;
+      aspect-ratio: 1580 / 920;
       border-radius: 12px;
       overflow: hidden;
       box-shadow: 0 8px 32px rgba(0,0,0,0.25), 0 2px 8px rgba(0,0,0,0.15);
@@ -89,7 +87,7 @@
       display: block;
     }
     @media screen and (max-width: 768px) {
-      .vis-demo-container { height: 75vh; min-height: 520px; }
+      .vis-demo-container { aspect-ratio: 1580 / 920; }
     }
   </style>
 
