@@ -379,6 +379,10 @@ async function init() {
     tryAutoplay();
   });
   video.addEventListener('timeupdate', onTick);
+  video.addEventListener('ended', () => {
+    video.currentTime = 0;
+    video.play().catch(() => {});
+  });
 
   // Try to play immediately; if the browser blocks it (not enough data yet),
   // retry once the video has buffered enough to start.
