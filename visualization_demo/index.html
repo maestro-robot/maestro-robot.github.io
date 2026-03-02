@@ -285,7 +285,7 @@ body::before {
     <!-- Left: Video + Perception -->
     <div class="left">
       <div class="vid-wrap">
-        <video id="video" controls preload="auto" muted playsinline>
+        <video id="video" controls preload="auto" autoplay muted playsinline>
           <source src="video_web.mp4" type="video/mp4">
         </video>
       </div>
@@ -344,6 +344,7 @@ let lastPerc = '';
 let autoScroll = true;
 let scrollTimer = null;
 let currentElapsed = 0;
+let isScrubbing = false;
 
 // ── Python keywords for syntax highlighting ──
 const KW = new Set(['import','from','as','def','class','if','elif','else','for','while',
@@ -371,15 +372,24 @@ async function init() {
 
   video.addEventListener('loadedmetadata', () => {
     document.getElementById('timeTotal').textContent = fmtTime(video.duration);
+    video.currentTime = 0;
+    setSpeed(5);
+    tryAutoplay();
   });
   video.addEventListener('timeupdate', onTick);
-  video.addEventListener('seeked', onTick);
 
-  // Autoplay from the beginning at 5× speed
-  video.currentTime = 0;
-  setSpeed(5);
-  video.play().catch(() => {});
-
+  // Try to play immediately; if the browser blocks it (not enough data yet),
+  // retry once the video has buffered enough to start.
+  function tryAutoplay() {
+    // Keep muted in JS as well for browser autoplay policies (e.g. Safari).
+    video.muted = true;
+    video.play().catch(() => {
+      video.addEventListener('canplay', function handler() {
+        video.removeEventListener('canplay', handler);
+        video.play().catch(() => {});
+      });
+    });
+  }
   // Detect MANUAL scroll only via wheel/touch — never fires from programmatic scrollTop
   const codeWrap = document.getElementById('codeWrap');
   codeWrap.addEventListener('wheel', () => {
@@ -393,25 +403,44 @@ async function init() {
     scrollTimer = setTimeout(() => { autoScroll = true; }, 2500);
   }, {passive:true});
 
-  // Timeline click to seek
+  // Timeline click / drag to seek
   const progBar = document.getElementById('progBar');
-  progBar.addEventListener('click', e => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (!video.duration || video.readyState < 1) return;
+  function seekFromClientX(clientX) {
+    if (!video.duration || !Number.isFinite(video.duration)) return;
     const rect = progBar.getBoundingClientRect();
-    // Clamp ratio between 0 and 1
-    const ratio = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+    if (!rect.width) return;
+    const ratio = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
     const targetTime = ratio * video.duration;
-    // Pause briefly, seek, then resume if was playing
-    const wasPlaying = !video.paused;
-    video.pause();
     video.currentTime = targetTime;
-    if (wasPlaying) {
-      video.play().catch(() => {});
-    }
-    onTick(); // Force immediate UI update
+    document.getElementById('progFill').style.width = (ratio * 100) + '%';
+    document.getElementById('timeNow').textContent = fmtTime(targetTime);
+  }
+
+  let wasPlayingBeforeScrub = false;
+  function finishScrub() {
+    if (!isScrubbing) return;
+    isScrubbing = false;
+    if (wasPlayingBeforeScrub) video.play().catch(() => {});
+  }
+
+  progBar.addEventListener('pointerdown', e => {
+    isScrubbing = true;
+    wasPlayingBeforeScrub = !video.paused;
+    if (wasPlayingBeforeScrub) video.pause();
+    progBar.setPointerCapture(e.pointerId);
+    seekFromClientX(e.clientX);
   });
+  progBar.addEventListener('pointermove', e => {
+    if (isScrubbing) seekFromClientX(e.clientX);
+  });
+  progBar.addEventListener('pointerup', e => {
+    if (!isScrubbing) return;
+    progBar.releasePointerCapture(e.pointerId);
+    seekFromClientX(e.clientX);
+    finishScrub();
+  });
+  progBar.addEventListener('pointercancel', finishScrub);
+  progBar.addEventListener('lostpointercapture', finishScrub);
 
   // Keyboard controls
   document.addEventListener('keydown', e => {
@@ -490,7 +519,7 @@ function onTick() {
   drawAnalogClock(elapsed);
 
   // Timeline
-  if (video.duration) {
+  if (video.duration && !isScrubbing) {
     const pct = (video.currentTime / video.duration) * 100;
     document.getElementById('progFill').style.width = pct + '%';
     document.getElementById('timeNow').textContent = fmtTime(video.currentTime);
