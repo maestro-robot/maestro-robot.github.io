@@ -116,6 +116,7 @@
       <a class="navbar-item" href="#abstract">Abstract</a>
       <a class="navbar-item" href="#method">Method</a>
       <a class="navbar-item" href="#visualization-demo">Agent Dashboard</a>
+      <a class="navbar-item" href="#passing-map">Passing Map</a>
       <a class="navbar-item" href="#videos">Videos</a>
       <a class="navbar-item" href="#toolset">Toolset</a>
       <a class="navbar-item" href="#system-prompt">System Prompt</a>
@@ -375,6 +376,40 @@
                   allow="autoplay" allowfullscreen></iframe>
         </div>
         <button class="vis-demo-close-btn" id="visDemoCloseBtn">
+          <i class="fas fa-times"></i>&ensp;Close
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Interactive Passing Map -->
+<section class="section" id="passing-map">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-full-width">
+        <h2 class="title is-3">Tool-Use Passing Map</h2>
+        <div class="content has-text-justified">
+          <p>
+            To quantify Maestro's tool orchestration patterns, we analyze <strong>2,062 function calls</strong> across <strong>62 manipulation trials</strong> spanning <strong>9 task categories</strong>.
+            The passing map visualizes <strong>inter-module transition frequencies</strong>, revealing how perception, control, grasping, and planning modules are dynamically chained together.
+            Filter by task type to compare orchestration strategies across different manipulation scenarios, including trials that incorporate <strong>VLA (π0.5)</strong> as an additional tool.
+          </p>
+        </div>
+
+        <div class="mb-4">
+          <button class="button is-medium is-rounded is-dark" id="passmapFullscreenBtn">
+            <span class="icon"><i class="fas fa-expand"></i></span>
+            <span>Expand to Fullscreen</span>
+          </button>
+        </div>
+
+        <div class="vis-demo-container" id="passmapContainer">
+          <iframe src="./Interactive_visualization/interactive_network.html"
+                  title="Maestro Tool-Use Passing Map"
+                  allowfullscreen></iframe>
+        </div>
+        <button class="vis-demo-close-btn" id="passmapCloseBtn">
           <i class="fas fa-times"></i>&ensp;Close
         </button>
       </div>
@@ -844,6 +879,35 @@
     document.addEventListener('keydown', function (e) {
       if (e.key === 'Escape' && container && container.classList.contains('is-fullscreen')) {
         setVisDemoFullscreen(false);
+      }
+    });
+
+    // ── Passing Map fullscreen toggle ──
+    var pmContainer = document.getElementById('passmapContainer');
+    var pmFsBtn     = document.getElementById('passmapFullscreenBtn');
+    var pmCloseBtn  = document.getElementById('passmapCloseBtn');
+
+    function setPassmapFullscreen(on) {
+      pmContainer.classList.toggle('is-fullscreen', on);
+      document.body.style.overflow = on ? 'hidden' : '';
+      pmFsBtn.innerHTML = on
+        ? '<span class="icon"><i class="fas fa-compress"></i></span><span>Exit Fullscreen</span>'
+        : '<span class="icon"><i class="fas fa-expand"></i></span><span>Expand to Fullscreen</span>';
+    }
+
+    if (pmFsBtn && pmContainer) {
+      pmFsBtn.addEventListener('click', function () {
+        setPassmapFullscreen(!pmContainer.classList.contains('is-fullscreen'));
+      });
+    }
+    if (pmCloseBtn) {
+      pmCloseBtn.addEventListener('click', function () {
+        setPassmapFullscreen(false);
+      });
+    }
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && pmContainer && pmContainer.classList.contains('is-fullscreen')) {
+        setPassmapFullscreen(false);
       }
     });
   });
