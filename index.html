@@ -89,6 +89,20 @@
     @media screen and (max-width: 768px) {
       .vis-demo-container { aspect-ratio: 1580 / 920; }
     }
+    .trial-toggle {
+      display: inline-flex; gap: 0; border-radius: 8px; overflow: hidden;
+      border: 1px solid #30363d; margin-bottom: 12px;
+    }
+    .trial-toggle .trial-btn {
+      background: #161b22; color: #8b949e; border: none;
+      padding: 8px 20px; font-size: 0.88rem; font-weight: 600;
+      cursor: pointer; transition: all 0.2s;
+    }
+    .trial-toggle .trial-btn:not(:last-child) { border-right: 1px solid #30363d; }
+    .trial-toggle .trial-btn:hover { color: #e6edf3; background: #1c2333; }
+    .trial-toggle .trial-btn.is-active {
+      background: #58a6ff; color: #fff;
+    }
   </style>
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -360,10 +374,15 @@
           <p>
             To provide full transparency into Maestro's decision-making process, we present an <strong>interactive agent dashboard</strong> that replays a complete robot manipulation trial in real time.
             As the task progresses, the dashboard simultaneously reveals every layer of the system: the <strong>subtask progression</strong> through the overall plan, the VLM agent's <strong>reasoning and planning</strong> traces, the <strong>live code</strong> being generated and executed line-by-line, and <strong>perception outputs</strong> produced by the invoked tool modules. All panels stay tightly synchronized with the task timeline, offering a comprehensive view of how Maestro orchestrates diverse modules to solve complex manipulation tasks.
+            <strong>We also include a trial where the agent detects a subtask failure in real time and autonomously replans to correct it, showcasing Maestro's closed-loop adaptability.</strong>
           </p>
         </div>
 
-        <div class="mb-4">
+        <div class="mb-4" style="display:flex; flex-direction:column; align-items:center; gap:12px;">
+          <div class="trial-toggle">
+            <button class="trial-btn is-active" data-src="./visualization_demo/index.html">Erase and stack</button>
+            <button class="trial-btn" data-src="./visualization_demo_replan/index.html">Erase (with replan)</button>
+          </div>
           <button class="button is-medium is-rounded is-dark" id="fullscreenBtn">
             <span class="icon"><i class="fas fa-expand"></i></span>
             <span>Expand to Fullscreen</span>
@@ -371,7 +390,7 @@
         </div>
 
         <div class="vis-demo-container" id="visDemoContainer">
-          <iframe src="./visualization_demo/index.html"
+          <iframe id="visDemoIframe" src="./visualization_demo/index.html"
                   title="Maestro Interactive Agent Dashboard"
                   allow="autoplay" allowfullscreen></iframe>
         </div>
@@ -852,6 +871,16 @@
         });
       });
     }
+
+    // ── Visualization Demo trial toggle ──
+    document.querySelectorAll('.trial-toggle .trial-btn').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        document.querySelectorAll('.trial-toggle .trial-btn').forEach(function (b) { b.classList.remove('is-active'); });
+        btn.classList.add('is-active');
+        var iframe = document.getElementById('visDemoIframe');
+        if (iframe) iframe.src = btn.getAttribute('data-src');
+      });
+    });
 
     // ── Visualization Demo fullscreen toggle ──
     var container = document.getElementById('visDemoContainer');
