@@ -806,8 +806,18 @@
               <p class="subtitle is-6 mt-2">Wiping with Cloth</p>
             </div>
           </div>
-          
+
         </div>
+
+        <div class="video-container">
+          <video controls width="100%" style="border-radius: 10px;" autoplay loop muted>
+            <source src="./static/videos/tether/mosaic_4k.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+          </video>
+          <p class="subtitle is-6 mt-2">Data scaled up using Tether from 10 Maestro demos.</p>
+        </div>
+        <br>
+
         <div class="content has-text-justified">
           <p>
             Beyond serving as a zero-shot generalist policy, Maestro can also function as an autonomous data generator for downstream policy learning. We integrate Maestro with <a href="https://willjhliang.github.io/tether-website/">Tether</a>, a framework that amplifies a small set of seed demonstrations into large, diverse training datasets via correspondence-driven trajectory warping. Maestro autonomously generates seed demonstrations that Tether then warps, requiring <em>no human teleoperation</em>. On two benchmark tasks (<em>Bowl from Shelf</em> and <em>Wiping with Cloth</em>), Maestro + Tether achieves performance on par with human-teleoped Tether (e.g., 95% vs. 100% on Bowl from Shelf), while both significantly outperform &pi;<sub>0</sub> (zero-shot) and Diffusion Policy trained on human-teleoped data. This highlights Maestro's value as a scalable data engine that can produce policies rivaling those trained on human-collected data.
