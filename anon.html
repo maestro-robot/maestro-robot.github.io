@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="description"
+        content="Maestro: Orchestrating Robotics Modules with Vision-Language Models for Zero-Shot Generalist Robots">
+  <meta name="keywords" content="reward generation, point tracking, robotics, learning from human videos">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Maestro: Orchestrating Robotics Modules with Vision-Language Models for Zero-Shot Generalist Robots</title>
+
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-PYVRSFMDRL"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+
+    function gtag() {
+      dataLayer.push(arguments);
+    }
+
+    gtag('js', new Date());
+
+    gtag('config', 'G-PYVRSFMDRL');
+  </script>
+
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
+        rel="stylesheet">
+
+  <link rel="stylesheet" href="./static/css/bulma.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-carousel.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-slider.min.css">
+  <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="./static/css/index.css">
+  <link rel="icon" href="./static/images/Maestro.ico">
+
+  <!-- Visualization Demo Embed Styles -->
+  <style>
+    .vis-demo-container {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 1580 / 920;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.25), 0 2px 8px rgba(0,0,0,0.15);
+      background: #0d1117;
+      border: 1px solid #30363d;
+      transition: all 0.3s ease;
+    }
+    .vis-demo-container iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+    /* Fullscreen mode */
+    .vis-demo-container.is-fullscreen {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw;
+      height: 100vh;
+      max-height: none;
+      min-height: unset;
+      z-index: 9999;
+      border-radius: 0;
+    }
+    .vis-demo-close-btn {
+      display: none;
+      position: fixed;
+      top: 16px; right: 16px;
+      z-index: 10000;
+      background: rgba(13, 17, 23, 0.85);
+      color: #e6edf3;
+      border: 1px solid #30363d;
+      border-radius: 8px;
+      padding: 8px 16px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 600;
+      backdrop-filter: blur(8px);
+      transition: background 0.2s, border-color 0.2s;
+    }
+    .vis-demo-close-btn:hover {
+      background: rgba(88, 166, 255, 0.2);
+      border-color: #58a6ff;
+    }
+    .vis-demo-container.is-fullscreen ~ .vis-demo-close-btn {
+      display: block;
+    }
+    @media screen and (max-width: 768px) {
+      .vis-demo-container { aspect-ratio: 1580 / 920; }
+    }
+    .trial-toggle {
+      display: inline-flex; gap: 0; border-radius: 8px; overflow: hidden;
+      border: 1px solid #30363d; margin-bottom: 12px;
+    }
+    .trial-toggle .trial-btn {
+      background: #161b22; color: #8b949e; border: none;
+      padding: 8px 20px; font-size: 0.88rem; font-weight: 600;
+      cursor: pointer; transition: all 0.2s;
+    }
+    .trial-toggle .trial-btn:not(:last-child) { border-right: 1px solid #30363d; }
+    .trial-toggle .trial-btn:hover { color: #e6edf3; background: #1c2333; }
+    .trial-toggle .trial-btn.is-active {
+      background: #58a6ff; color: #fff;
+    }
+  </style>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script defer src="./static/js/fontawesome.all.min.js"></script>
+  <script src="./static/js/bulma-carousel.min.js"></script>
+  <script src="./static/js/bulma-slider.min.js"></script>
+  <script src="./static/js/index.js"></script>
+</head>
+<body>
+
+<nav class="navbar site-navbar is-fixed-top" role="navigation" aria-label="main navigation">
+  <div class="navbar-brand">
+    <a class="navbar-item" href="#top">
+      <strong>Maestro</strong>
+    </a>
+    <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="siteNavbarMenu">
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </a>
+  </div>
+  <div id="siteNavbarMenu" class="navbar-menu">
+    <div class="navbar-end">
+      <a class="navbar-item" href="#overview">Overview</a>
+      <a class="navbar-item" href="#abstract">Abstract</a>
+      <a class="navbar-item" href="#method">Method</a>
+      <a class="navbar-item" href="#visualization-demo">Agent Dashboard</a>
+      <a class="navbar-item" href="#passing-map">Passing Map</a>
+      <a class="navbar-item" href="#videos">Videos</a>
+      <a class="navbar-item" href="#toolset">Toolset</a>
+      <a class="navbar-item" href="#system-prompt">System Prompt</a>
+      <a class="navbar-item" href="#evaluation">Evaluation</a>
+      <a class="navbar-item" href="#results">Results</a>
+      <a class="navbar-item" href="#vla">Maestro+VLA</a>
+      <a class="navbar-item" href="#self-evolution">Self-Evolution</a>
+      <a class="navbar-item" href="#data-collection">Data Collection</a>
+      <a class="navbar-item" href="#bibtex">BibTeX</a>
+    </div>
+  </div>
+</nav>
+
+<section class="hero" id="top">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column has-text-centered">
+          <h1 class="title is-1 publication-title">Maestro: Orchestrating Robotics Modules with Vision-Language Models for Zero-Shot Generalist Robots</h1>
+          
+          <!-- Authors (anonymized for double-blind review) -->
+          <div class="is-size-4 publication-authors">
+            <span class="author-block">Anonymous Submission</span>
+          </div>
+          <!-- Original authors and contribution notes hidden for double-blind submission:
+          <div class="is-size-4 publication-authors">
+            <span class="author-block">Junyao Shi*,</span>
+            <span class="author-block">Rujia Yang*,</span>
+            <span class="author-block">Kaitian Chao*,</span>
+            <span class="author-block">Selina Wan,</span>
+            <span class="author-block">Yifei Shao,</span>
+            <span class="author-block">Jiahui Lei,</span>
+            <br>
+            <span class="author-block">Jianing Qian,</span>
+            <span class="author-block">Long Le,</span>
+            <span class="author-block">Pratik Chaudhari,</span>
+            <span class="author-block">Kostas Daniilidis,</span>
+            <span class="author-block">Chuan Wen,</span>
+            <span class="author-block">Dinesh Jayaraman</span>
+          </div>
+          <div class="is-size-5 publication-authors">
+            <span class="author-block">* denotes equal contribution</span><br>
+            <span class="author-block">contributed to Table-Top Manipulation system development</span><br>
+            <span class="author-block">contributed to Mobile Manipulation system development</span>
+          </div>
+          -->
+
+
+          <!-- Affiliations (institution + workshop acceptances hidden for double-blind review) -->
+          <div class="is-size-4 publication-authors">
+            <span class="author-block">Under Review</span>
+          </div>
+          <!-- Original affiliation and workshop presentations hidden for double-blind submission:
+          <div class="is-size-4 publication-authors">
+            <span class="author-block">University of Pennsylvania</span>
+          </div>
+          <div class="is-size-4 publication-authors">
+            <span class="author-block">Under Review</span>
+          </div>
+          <div class="is-size-5 publication-authors">
+            <span class="author-block">Also Oral Presentation at CoRL RoboArena Workshop, 2025</span>
+          </div>
+          <div class="is-size-5 publication-authors">
+            <span class="author-block">And Oral Presentation at NeurIPS SpaVLE Workshop, 2025</span>
+          </div>
+          -->
+          
+
+          <div class="column has-text-centered">
+            <div class="publication-links">
+              <!-- PDF Link. (hidden for double-blind: links to non-anonymized paper PDF) -->
+              <!--
+              <span class="link-block">
+                <a href="./static/Maestro.pdf"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fas fa-file-pdf"></i>
+                  </span>
+                  <span>Paper</span>
+                </a>
+              </span>
+              -->
+              <!-- Supp Link. (hidden for double-blind) -->
+              <!--
+              <span class="link-block">
+                <a href="./static/Supplementary.pdf"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fas fa-file-pdf"></i>
+                  </span>
+                  <span>Supplementary</span>
+                </a>
+              </span>
+              -->
+              <!-- Interactive Viz Link. --> 
+              <span class="link-block">
+                <a href="./Interactive_visualization/"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fas fa-project-diagram"></i>
+                  </span>
+                  <span>Interactive Tool-use Analysis</span>
+                </a>
+              </span>
+              <!-- arXiv Link. -->
+              <!-- <span class="link-block">
+                <a href="https://arxiv.org/pdf/2511.00917"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="ai ai-arxiv"></i>
+                  </span>
+                  <span>arXiv</span>
+                </a>
+              </span> -->
+              <!-- Video Link. -->
+              <!-- <span class="link-block">
+                <a href="https://www.youtube.com/watch?v=MrKrnHhk8IA"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fab fa-youtube"></i>
+                  </span>
+                  <span>Video</span>
+                </a>
+              </span> -->
+              <!-- Code Link. -->
+              <!-- <span class="link-block">
+                <a href="https://points2reward.github.io"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fab fa-github"></i>
+                  </span>
+                  <span>Code (Coming Soon)</span>
+                  </a>
+              </span> -->
+              <!-- Dataset Link. -->
+              <!-- <span class="link-block">
+                <a href="https://github.com/google/nerfies/releases/tag/0.1"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="far fa-images"></i>
+                  </span>
+                  <span>Data</span>
+                  </a>
+              </span> -->
+            <!-- </div> -->
+          <!-- </div> -->
+        <!-- </div> -->
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="main-concept-video">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-full-width">
+        <video controls width="100%" style="border-radius: 10px;" autoplay loop muted>
+          <source src="./static/videos/concept_video.mp4" type="video/mp4">
+          Your browser does not support the video tag.
+        </video>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="overview">
+  <div class="container is-max-desktop">
+    <!-- Overview. -->
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-full-width">
+        <h2 class="title is-3">Overview of Maestro</h2>
+        <div class="content has-text-justified">
+          <p>
+            <strong>TLDR</strong>: We introduce <strong>Maestro</strong>, a VLM coding agent that composes diverse robotics-related tool modules into programmatic policies. Maestro represents <strong>the first competitive <em>modular</em> policy for generalist robots</strong>:
+          </p>
+          <ul style="text-align: left;">
+            <li>Achieves substantially stronger zero-shot performance than current general-purpose VLA models in challenging manipulation settings</li>
+            <li>Interpretable, debuggable, and easily extensible to new tools and robot embodiments</li>
+            <li>Improves from a handful of real-world trials via local code edits</li>
+            <li>Strategically employs VLA models as tools for both speed and performance</li>
+            <li>Enables fully autonomous data collection &mdash; generates high-quality seed demonstrations that, combined with data augmentation frameworks, produce policies rivaling those trained on human-collected data</li>
+          </ul>
+        </div>
+        <figure class="image">
+          <img src="./static/images/maestro_concept.png">
+        </figure>
+
+        <div class="content has-text-justified">
+          <p>
+            <strong>Maestro</strong> receives language instruction and leverages a set of tools to complete diverse tasks in a zero-shot setting.
+          </p>
+        </div>
+        <br>
+        <div id="method"></div>
+        <figure class="image">
+          <img src="./static/images/maestro_method.png">
+        </figure>
+        <br>
+        <div class="content has-text-justified">
+          <p>
+            Given prompt and images, VLM plans by writing and executing code that integrates perception, spatial reasoning, control, learned visuomotor policies, and image editing. Execution results (images and stdout) provide feedback for reacting and replanning, forming a closed-loop perception–action–learning cycle. This enables adaptive long-horizon manipulation, as illustrated in the tabletop example on the right (instruction: Grasp the knife by the handle and cut the banana in the middle).
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="abstract">
+  <div class="container is-max-desktop">
+    <!-- Abstract. -->
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Abstract</h2>
+        <div class="content has-text-justified">
+          <p>
+            Today's best-explored routes towards generalist robots center on collecting ever larger "observations-in actions-out" robotics datasets to train large end-to-end models, copying a recipe that has worked for vision-language models (VLMs). We pursue a road less traveled: building generalist policies directly around VLMs by augmenting their general capabilities with specific robot capabilities encapsulated in a carefully curated set of perception, planning, control, and learned policy modules, including vision-language-action (VLA) models. In Maestro, a VLM coding agent dynamically composes these modules into a programmatic policy for the current task and scenario. Maestro's architecture benefits from a streamlined closed-loop interface that grants the agent substantial autonomy to monitor, react, and replan without many manually imposed structural constraints, and a comprehensive and diverse tool repertoire. As a result, it achieves substantially stronger zero-shot performance than current general-purpose VLA models in challenging manipulation settings, particularly those underrepresented in their training data. Further, Maestro is easily extensible to incorporate new modules, easily editable to suit new embodiments such as a quadruped-mounted arm, and even easily adapts from minimal real-world experiences through local code edits. Maestro's autonomous real-world trajectories can additionally be leveraged to train fast and robust policies. Together, these results suggest that Maestro provides a practical path toward scaling autonomous robot deployment and data collection in diverse real-world settings.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Interactive Agent Dashboard -->
+<section class="section" id="visualization-demo">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-full-width">
+        <h2 class="title is-3">Interactive Agent Dashboard</h2>
+        <div class="content has-text-justified">
+          <p>
+            To provide full transparency into Maestro's decision-making process, we present an <strong>interactive agent dashboard</strong> that replays a complete robot manipulation trial in real time.
+            As the task progresses, the dashboard simultaneously reveals every layer of the system: the <strong>subtask progression</strong> through the overall plan, the VLM agent's <strong>reasoning and planning</strong> traces, the <strong>live code</strong> being generated and executed line-by-line, and <strong>perception outputs</strong> produced by the invoked tool modules. All panels stay tightly synchronized with the task timeline, offering a comprehensive view of how Maestro orchestrates diverse modules to solve complex manipulation tasks.
+            <strong>We also include a trial where the agent detects a subtask failure in real time and autonomously replans to correct it, showcasing Maestro's closed-loop adaptability.</strong>
+          </p>
+        </div>
+
+        <div class="mb-4" style="display:flex; flex-direction:column; align-items:center; gap:12px;">
+          <div class="trial-toggle">
+            <button class="trial-btn is-active" data-src="./visualization_demo/index.html">Erase and stack</button>
+            <button class="trial-btn" data-src="./visualization_demo_replan/index.html">Erase (with replan)</button>
+          </div>
+          <button class="button is-medium is-rounded is-dark" id="fullscreenBtn">
+            <span class="icon"><i class="fas fa-expand"></i></span>
+            <span>Expand to Fullscreen</span>
+          </button>
+        </div>
+
+        <div class="vis-demo-container" id="visDemoContainer">
+          <iframe id="visDemoIframe" src="./visualization_demo/index.html"
+                  title="Maestro Interactive Agent Dashboard"
+                  allow="autoplay" allowfullscreen></iframe>
+        </div>
+        <button class="vis-demo-close-btn" id="visDemoCloseBtn">
+          <i class="fas fa-times"></i>&ensp;Close
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Interactive Passing Map -->
+<section class="section" id="passing-map">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-full-width">
+        <h2 class="title is-3">Tool-Use Passing Map</h2>
+        <div class="content has-text-justified">
+          <p>
+            To quantify Maestro's tool orchestration patterns, we analyze <strong>2,062 function calls</strong> across <strong>62 manipulation trials</strong> spanning <strong>9 task categories</strong>.
+            The passing map visualizes <strong>inter-module transition frequencies</strong>, revealing how perception, control, grasping, and planning modules are dynamically chained together.
+            Filter by task type to compare orchestration strategies across different manipulation scenarios, including trials that incorporate <strong>VLA (π0.5)</strong> as an additional tool.
+          </p>
+        </div>
+
+        <div class="mb-4">
+          <button class="button is-medium is-rounded is-dark" id="passmapFullscreenBtn">
+            <span class="icon"><i class="fas fa-expand"></i></span>
+            <span>Expand to Fullscreen</span>
+          </button>
+        </div>
+
+        <div class="vis-demo-container" id="passmapContainer">
+          <iframe src="./Interactive_visualization/interactive_network.html"
+                  title="Maestro Tool-Use Passing Map"
+                  allowfullscreen></iframe>
+        </div>
+        <button class="vis-demo-close-btn" id="passmapCloseBtn">
+          <i class="fas fa-times"></i>&ensp;Close
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Video Demonstrations Section -->
+<section class="section" id="videos">
+  <div class="container is-max-desktop">
+    <!-- Tabletop Videos -->
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-full-width">
+        <h2 class="title is-3">Tabletop Manipulation Videos</h2>
+        
+        <!-- First row: 2 videos -->
+        <div class="columns is-centered">
+          <div class="column is-half">
+            <div class="video-container">
+              <video controls width="100%" style="border-radius: 10px;" autoplay loop muted>
+                <source src="./static/videos/tabletop/open_the_lower_cabinet_door_2xspeedup.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+              </video>
+              <p class="subtitle is-6 mt-2">"Open the lower cabinet door by pulling the yellow door handle."</p>
+            </div>
+          </div>
+          <div class="column is-half">
+            <div class="video-container">
+              <video controls width="100%" style="border-radius: 10px;" autoplay loop muted>
+                <source src="./static/videos/tabletop/fold_the_four_corners_of_the_towl_to_the_2xspeedup.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+              </video>
+              <p class="subtitle is-6 mt-2">"Fold the four corners of the towel to the center"</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Second row: 2 videos -->
+        <div class="columns is-centered">
+          <div class="column is-half">
+            <div class="video-container">
+              <video controls width="100%" style="border-radius: 10px;" autoplay loop muted>
+                <source src="./static/videos/tabletop/erase_instructions_on_the_whiteboard_2xspeedup.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+              </video>
+              <p class="subtitle is-6 mt-2">"Erase instructions on the whiteboard, then follow the instruction to stack cubes."</p>
+            </div>
+          </div>
+          <div class="column is-half">
+            <div class="video-container">
+              <video controls width="100%" style="border-radius: 10px;" autoplay loop muted>
+                <source src="./static/videos/tabletop/rotate_cube_purple_side_up_2xspeedup.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+              </video>
+              <p class="subtitle is-6 mt-2">"Rotate the cube so that one of the purple side faces up."</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Third row: 2 videos -->
+        <div class="columns is-centered">
+            <div class="column is-half">
+              <div class="video-container">
+                <video controls width="100%" style="border-radius: 10px;" autoplay loop muted>
+                  <source src="./static/videos/tabletop/put_the_tennis_ball_into_the_bowl.mp4" type="video/mp4">
+                  Your browser does not support the video tag.
+                </video>
+                <p class="subtitle is-6 mt-2">"Put the tennis ball into the bowl."</p>
+              </div>
+            </div>
+            <div class="column is-half">
+              <div class="video-container">
+                <video controls width="100%" style="border-radius: 10px;" autoplay loop muted>
+                  <source src="./static/videos/tabletop/hang_cup.mp4" type="video/mp4">
+                  Your browser does not support the video tag.
+                </video>
+                <p class="subtitle is-6 mt-2">"Hang the mug cup onto the mug hanger stand."</p>
+              </div>
+            </div>
+        </div>
+
+        <!-- Fourth row: 2 videos -->
+        <div class="columns is-centered">
+          <div class="column is-half">
+            <div class="video-container">
+              <video controls width="100%" style="border-radius: 10px;" autoplay loop muted>
+                <source src="./static/videos/tabletop/cut_banana_with_knife.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+              </video>
+              <p class="subtitle is-6 mt-2">"Orthogonally cut the banana in half with the black knife."</p>
+            </div>
+          </div>
+          <div class="column is-half">
+            <div class="video-container">
+              <video controls width="100%" style="border-radius: 10px;" autoplay loop muted>
+                <source src="./static/videos/tabletop/clean_table_from_largest_to_smallest.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+              </video>
+              <p class="subtitle is-6 mt-2">"Clean the table by putting all the items into the bowl, from big size to small size."</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  
+    <!-- Mobile Videos -->
+    <div class="columns is-centered has-text-centered mt-6">
+      <div class="column is-full-width">
+        <h2 class="title is-3">Mobile Manipulation Videos</h2>
+        
+        <!-- First row: 2 videos -->
+        <div class="columns is-centered">
+          <div class="column is-half">
+            <div class="video-container">
+              <video controls width="100%" style="border-radius: 10px;" autoplay loop muted>
+                <source src="./static/videos/mobile/open_door_2.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+              </video>
+              <p class="subtitle is-6 mt-2">"Open door and enter the building."</p>
+            </div>
+          </div>
+          <div class="column is-half">
+            <div class="video-container">
+              <video controls width="100%" style="border-radius: 10px;" autoplay loop muted>
+                <source src="./static/videos/mobile/explore-001.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+              </video>
+              <p class="subtitle is-6 mt-2">"Search for the orange plush ball and return when grasped."</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Second row: 2 videos -->
+        <div class="columns is-centered">
+          <div class="column is-half">
+            <div class="video-container">
+              <video controls width="100%" style="border-radius: 10px;" autoplay loop muted>
+                <source src="./static/videos/mobile/trash.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+              </video>
+              <p class="subtitle is-6 mt-2">"Trash out the green plush ball into the garbage can."</p>
+            </div>
+          </div>
+          <div class="column is-half">
+            <div class="video-container">
+              <video controls width="100%" style="border-radius: 10px;" autoplay loop muted>
+                <source src="./static/videos/mobile/collect_all_objects-003.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+              </video>
+              <p class="subtitle is-6 mt-2">"Collect all plush toys on the white table"</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="toolset">
+  <div class="container is-max-desktop">
+    <!-- Method. -->
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-full-width">
+        <h2 class="title is-3">Toolset Overview</h2>
+        <figure class="image">
+          <img src="./static/images/tools.png">
+        </figure>
+        <div class="content has-text-justified">
+          <br>
+          <p>
+            Maestro framework's strength lies in its comprehensive and hierarchical toolset, which the VLM dynamically programs to execute tasks.
+          </p>
+          <p>
+            <strong>Core Tool Categories</strong>
+          </p>
+          <ul>
+            <li>
+              <strong>"Coarse-to-fine" perception modules:</strong> We designed a tiered hierarchy of perception tools. We provide tools ranging from the fastest and simplest level (raw sensory input), medium level (mask centroid), to precise but slow (VLM-selected task-relevant keypoints). These tools give Maestro agency to autonomously select the right tools for the right uses, balancing execution speed and task performance.
+            </li>
+            <li>
+              <strong>Active perception modules:</strong> A dedicated module actively improves the performance of other vision-based tools by gathering better sensory information (like zooming or looking around) to overcome inherent noise.
+            </li>
+            <li>
+              <strong>Geometry and linear algebra modules:</strong> Explicitly providing geometry and linear algebra tools that improve Maestro’s ability to reason step-by-step about object affordances and spatial relations.
+            </li>
+            <li>
+              <strong>Fast-inference VLM monitor enables VLA usage:</strong> A fast-inference, locally hosted VLM (Qwen2.5-VL-72B-Instruct) acts as a high-frequency monitor (2Hz) to check task conditions and precisely interrupt fast-running Visual Language Agents (VLAs) upon completion or for replanning.
+            </li>
+            <li>
+              <strong>Collision avoidance:</strong> Efficient, point-cloud-based motion planning is integrated for robust and generalizable object interactions in cluttered environments.
+            </li>
+            <li>
+              <strong>Semantic map:</strong> By caching observed object locations, it supports persistent reasoning for mobile manipulation tasks.
+            </li>
+          </ul>
+
+          <p>
+            <strong>Mobile Manipulation Extensions</strong>
+          </p>
+          <p>
+            For mobile tasks, the toolset is expanded to include robust state estimation (using LiDAR–Inertial Odometry), active perception (e.g., look around, remember object location), and dual-mode locomotion (global navigation and fine-grained nudging). This enables the agent to successfully execute multi-stage, long-horizon tasks, such as transport and exploration, across large workspaces.
+            By effectively programming and coordinating these diverse, high-quality modules, Maestro successfully fuses the semantic intelligence of VLMs with the precision of specialized robotics—a combination essential for achieving superior zero-shot generalization.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="system-prompt">
+  <div class="container is-max-desktop">
+    <!-- Method. -->
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-half">
+        <h2 class="title is-3">System Prompt</h2>
+        <figure class="image">
+          <img src="./static/images/prompt.jpg">
+        </figure>
+        <br>
+        <div class="content has-text-justified">
+          <p>
+            A summarized overview of Maestro's system prompt.          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="evaluation">
+  <div class="container is-max-desktop">
+    <!-- Star-Gen Generalization. -->
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-full-width">
+        <h2 class="title is-3">Systematic Generalization for Evaluation</h2>
+        <div class="content has-text-justified">
+          <p>
+            Our evaluation protocol is designed for systematic experimentation, adopting the <strong><a href="https://stargen-taxonomy.github.io/">STAR-Gen</a> taxonomy</strong> of generalization for robot manipulation. STAR-Gen formalizes testing by creating systematic perturbations relative to a base task. We leverage the STAR-Gen scenario generation tool, prompting Gemini to generate diverse task instances across four key axes: <strong>visual changes to task-relevant objects</strong>, <strong>changes to object poses</strong>, <strong>changes to action verbs requiring new behavior</strong>, and <strong>introducing entirely new manipulated objects</strong>, This approach ensures that every trial differs substantially and meaningfully from the rest, capturing realistic in-the-wild diversity and providing a rigorous test of Maestro's robustness and adaptability. The table below presents the experimental setup and results comparison for each task trial.
+          </p>
+        </div>
+        <br>
+        <figure class="image">
+          <img src="./static/images/star_gen_figure.png">
+        </figure>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Results Section -->
+<section class="section" id="results">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-full-width">
+        <h2 class="title is-3">Maestro Zero-Shot Quantitative Results</h2>
+        <div class="content has-text-justified">
+          <p>
+            To ensure systematic evaluation, we adopted the STAR-Gen taxonomy of generalization to create five diverse, meaningful task perturbations for each challenge axis, measuring system performance using a task progress score rubric across tabletop (Franka Panda) and mobile (Unitree Go2-W with AgileX PiPER) robot embodiments.
+          </p>
+        </div>
+        <h2 class="title is-4">Tabletop Manipulation Results</h2>
+        <div class="content has-text-justified">
+          <p>
+            Maestro substantially outperforms all VLA and CaP baselines across challenging manipulation tasks. This success stems from combining the VLM's high-level semantic reasoning with specialized tools for low-level execution precision; while VLA models struggle with out-of-distribution scenarios (like articulated objects) and lack memory, Maestro remains robust and adaptable.          </p>
+        </div>
+        <figure class="image">
+          <img src="./static/images/main_table_bar_plot.png">
+        </figure>
+        <br>
+      </div>
+    </div>
+  </div>
+  
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-full-width">
+        <h2 class="title is-4">Mobile Manipulation Results</h2>
+        <div class="content has-text-justified">
+          <p>
+            For mobile manipulation, Maestro successfully executes complex, long-horizon tasks across four challenge axes. Performance on long-horizon tasks is bolstered by a cached semantic map for persistent object tracking, though failures occasionally occur due to low-level issues like inaccurate depth or invalid grasp poses. In contrast, active exploration and object affordance reasoning benefit greatly from multi-view replanning and precise keypoint selection, leading to high success rates.
+          </p>
+        </div>
+        <div class="columns is-centered">
+          <div class="column is-half">
+            <figure class="image">
+              <img src="./static/images/mobile_results.png">
+            </figure>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Maestro+VLA Section -->
+<section class="section" id="vla">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-full-width">
+        <h2 class="title is-3">Maestro Guides VLA for Efficient Action</h2>
+        <div class="content has-text-justified">
+          <p>
+            Maestro achieves improved efficiency and performance through the integrated use of a VLM and VLA tool module. The VLM leverages its sophisticated reasoning capability to interpret complex user instructions and provide detailed, accurate observational reasoning. The VLA functions as a fast and powerful "muscle," quickly completing simple, well-trained subtasks such as pick and place. This strategic division of labor allows the Maestro+VLA system to execute complex commands both quickly and accurately.
+          </p>
+        </div>        
+        <div class="columns is-centered">
+          <div class="column is-full-width">
+            <div class="video-container">
+              <video controls width="100%" style="border-radius: 10px;" autoplay loop muted>
+                <source src="./static/videos/tabletop/vla_and_maestro.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+              </video>
+              <p class="subtitle is-6 mt-2">"Clean the table by putting all the items into the bowl, from big size to small size."</p>
+            </div>
+          </div>
+        </div>
+        <br>
+        <div class="columns is-centered">
+          <div class="column is-full-width">
+          <figure class="image">
+            <img src="./static/images/vla_graph.jpg">
+          </figure>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Self-Evolution Section -->
+<section class="section" id="self-evolution">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-full-width">
+        <h2 class="title is-3">Maestro Self-Evolution Across Trials</h2>
+        <div class="content has-text-justified">
+          <p>
+            Maestro can autonomously improve its generated policies through a self-evolution loop. After each trial, Gemini reviews the recorded execution video alongside its own code and reasoning trace, producing a structured reflection that diagnoses the root cause of any failure. This reflection is then provided as in-context guidance for the next trial, enabling the model to iteratively refine its approach without human intervention.
+          </p>
+          <p>
+            We demonstrate this on the open-cabinet task. In the initial trial, Maestro attempts a top-down grasp with a straight-line pull — failing to account for the door's hinge kinematics (35% progress). After reflecting on the video, it restructures its strategy entirely: estimating the hinge axis from door corner keypoints and generating a hinge-based arc trajectory, bringing progress to 70%. Subsequent evolutions introduce post-grasp stabilization to prevent handle slip (85%) and further refine the trajectory smoothness with more waypoints and incremental orientation tracking, ultimately achieving full task completion (100%). Across four autonomous trials, Maestro progresses from a naive linear pull to a kinematically grounded arc policy with robust grasp stabilization — all through video-grounded self-reflection.
+          </p>
+        </div>
+        <figure class="image">
+          <img src="./static/images/figure_code_evolution.png">
+        </figure>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="data-collection">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-full-width">
+        <h2 class="title is-3">Autonomous Data Collection with Maestro</h2>
+        
+        <div class="columns is-centered">
+          
+          <div class="column is-half">
+            <div class="video-container">
+              <video controls width="100%" style="border-radius: 10px;" autoplay loop muted>
+                <source src="./static/videos/tether/taking_bowl.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+              </video>
+              <p class="subtitle is-6 mt-2">Bowl from Shelf</p>
+            </div>
+          </div>
+
+          <div class="column is-half">
+            <div class="video-container">
+              <video controls width="100%" style="border-radius: 10px;" autoplay loop muted>
+                <source src="./static/videos/tether/erase_board.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+              </video>
+              <p class="subtitle is-6 mt-2">Wiping with Cloth</p>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="video-container">
+          <video controls width="100%" style="border-radius: 10px;" autoplay loop muted>
+            <source src="./static/videos/tether/mosaic_4k.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+          </video>
+          <p class="subtitle is-6 mt-2">Data scaled up using Tether from 10 Maestro demos.</p>
+        </div>
+        <br>
+
+        <div class="content has-text-justified">
+          <p>
+            Beyond serving as a zero-shot generalist policy, Maestro can also function as an autonomous data generator for downstream policy learning. We integrate Maestro with <a href="https://willjhliang.github.io/tether-website/">Tether</a>, a framework that amplifies a small set of seed demonstrations into large, diverse training datasets via correspondence-driven trajectory warping. Maestro autonomously generates seed demonstrations that Tether then warps, requiring <em>no human teleoperation</em>. On two benchmark tasks (<em>Bowl from Shelf</em> and <em>Wiping with Cloth</em>), Maestro + Tether achieves performance on par with human-teleoped Tether (e.g., 95% vs. 100% on Bowl from Shelf), while both significantly outperform &pi;<sub>0</sub> (zero-shot) and Diffusion Policy trained on human-teleoped data. This highlights Maestro's value as a scalable data engine that can produce policies rivaling those trained on human-collected data.
+          </p>
+        </div>
+        <figure class="image">
+          <img src="./static/images/tether_graph.png">
+        </figure>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="bibtex">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">BibTeX Citation</h2>
+        <div class="content has-text-left">
+          <pre style="overflow-x: auto;"><code>@inproceedings{anonymous2026maestro,
+  title={Maestro: Orchestrating Robotics Modules with Vision-Language Models for Zero-Shot Generalist Robots},
+  author={Anonymous},
+  booktitle={Under review},
+  year={2026}
+}</code></pre>
+          <!-- Original (non-anonymous) BibTeX hidden for double-blind submission:
+          @inproceedings{shi2025maestro,
+            title={Maestro: Orchestrating Robotics Modules with Vision-Language Models for Zero-Shot Generalist Robots},
+            author={Shi, Junyao and Yang, Rujia and Chao, Kaitian and Wan, Bingqing Selina and Shao, Yifei Simon and Lei, Jiahui and Qian, Jianing and Le, Long and Chaudhari, Pratik and Daniilidis, Kostas and others},
+            booktitle={NeurIPS 2025 Workshop on Space in Vision, Language, and Embodied AI},
+            year={2025}
+          }
+          -->
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container">
+    <div class="columns is-centered">
+      <div class="column is-8">
+      <div class="content has-text-centered">
+        <p>
+        Website template borrowed from <a href="https://nerfies.github.io/">NeRFies</a>.
+        </p>
+      </div>
+      </div>
+    </div>
+    </div>
+</footer>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    // ── Mobile navbar burger toggle ──
+    var burger = document.querySelector('.site-navbar .navbar-burger');
+    var menu = document.getElementById('siteNavbarMenu');
+    if (burger && menu) {
+      burger.addEventListener('click', function () {
+        burger.classList.toggle('is-active');
+        menu.classList.toggle('is-active');
+      });
+      menu.querySelectorAll('.navbar-item').forEach(function (item) {
+        item.addEventListener('click', function () {
+          burger.classList.remove('is-active');
+          menu.classList.remove('is-active');
+        });
+      });
+    }
+
+    // ── Visualization Demo trial toggle ──
+    document.querySelectorAll('.trial-toggle .trial-btn').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        document.querySelectorAll('.trial-toggle .trial-btn').forEach(function (b) { b.classList.remove('is-active'); });
+        btn.classList.add('is-active');
+        var iframe = document.getElementById('visDemoIframe');
+        if (iframe) iframe.src = btn.getAttribute('data-src');
+      });
+    });
+
+    // ── Visualization Demo fullscreen toggle ──
+    var container = document.getElementById('visDemoContainer');
+    var fsBtn     = document.getElementById('fullscreenBtn');
+    var closeBtn  = document.getElementById('visDemoCloseBtn');
+
+    function setVisDemoFullscreen(on) {
+      container.classList.toggle('is-fullscreen', on);
+      document.body.style.overflow = on ? 'hidden' : '';
+      fsBtn.innerHTML = on
+        ? '<span class="icon"><i class="fas fa-compress"></i></span><span>Exit Fullscreen</span>'
+        : '<span class="icon"><i class="fas fa-expand"></i></span><span>Expand to Fullscreen</span>';
+    }
+
+    if (fsBtn && container) {
+      fsBtn.addEventListener('click', function () {
+        setVisDemoFullscreen(!container.classList.contains('is-fullscreen'));
+      });
+    }
+    if (closeBtn) {
+      closeBtn.addEventListener('click', function () {
+        setVisDemoFullscreen(false);
+      });
+    }
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && container && container.classList.contains('is-fullscreen')) {
+        setVisDemoFullscreen(false);
+      }
+    });
+
+    // ── Passing Map fullscreen toggle ──
+    var pmContainer = document.getElementById('passmapContainer');
+    var pmFsBtn     = document.getElementById('passmapFullscreenBtn');
+    var pmCloseBtn  = document.getElementById('passmapCloseBtn');
+
+    function setPassmapFullscreen(on) {
+      pmContainer.classList.toggle('is-fullscreen', on);
+      document.body.style.overflow = on ? 'hidden' : '';
+      pmFsBtn.innerHTML = on
+        ? '<span class="icon"><i class="fas fa-compress"></i></span><span>Exit Fullscreen</span>'
+        : '<span class="icon"><i class="fas fa-expand"></i></span><span>Expand to Fullscreen</span>';
+    }
+
+    if (pmFsBtn && pmContainer) {
+      pmFsBtn.addEventListener('click', function () {
+        setPassmapFullscreen(!pmContainer.classList.contains('is-fullscreen'));
+      });
+    }
+    if (pmCloseBtn) {
+      pmCloseBtn.addEventListener('click', function () {
+        setPassmapFullscreen(false);
+      });
+    }
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && pmContainer && pmContainer.classList.contains('is-fullscreen')) {
+        setPassmapFullscreen(false);
+      }
+    });
+  });
+</script>
+</body>
+</html>
