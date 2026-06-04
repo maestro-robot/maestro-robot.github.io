@@ -3,10 +3,10 @@
 <head>
   <meta charset="utf-8">
   <meta name="description"
-        content="Maestro: Orchestrating Robotics Modules with Vision-Language Models for Zero-Shot Generalist Robots">
+        content="Maestro: Orchestrating Robotics Modules with Coding Agents for Zero-Shot Generalist Robots">
   <meta name="keywords" content="reward generation, point tracking, robotics, learning from human videos">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Maestro: Orchestrating Robotics Modules with Vision-Language Models for Zero-Shot Generalist Robots</title>
+  <title>Maestro: Orchestrating Robotics Modules with Coding Agents for Zero-Shot Generalist Robots</title>
 
   <!-- Global site tag (gtag.js) - Google Analytics -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-PYVRSFMDRL"></script>
@@ -103,6 +103,59 @@
     .trial-toggle .trial-btn.is-active {
       background: #58a6ff; color: #fff;
     }
+    /* Algorithm pseudocode box */
+    .algo-box {
+      border: 1px solid #d0d7de; border-radius: 10px; overflow: hidden;
+      margin: 1rem 0 1.5rem; background: #fff;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+    .algo-title {
+      background: #f6f8fa; border-bottom: 1px solid #d0d7de;
+      padding: 8px 14px; font-weight: 700; font-size: 0.95rem; color: #24292f;
+    }
+    .algo-pre {
+      margin: 0; padding: 14px 16px; background: #fff; overflow-x: auto;
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      font-size: 0.82rem; line-height: 1.55; color: #24292f; white-space: pre;
+      text-align: left;
+    }
+    .algo-pre code { background: none; color: inherit; padding: 0; }
+    .algo-pre em { font-style: italic; color: #0550ae; }
+    .algo-kw { color: #cf222e; font-weight: 700; }
+    .algo-cmt { color: #6e7781; font-style: italic; }
+
+    /* ── Floating section navigation ── */
+    .float-nav { position: fixed; top: 14px; left: 14px; z-index: 1000; }
+    .float-nav-toggle {
+      display: flex; flex-direction: column; justify-content: center; gap: 5px;
+      width: 46px; height: 46px; padding: 0 12px;
+      background: rgba(255,255,255,0.92); border: 1px solid #d0d7de; border-radius: 11px;
+      cursor: pointer; -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+      box-shadow: 0 2px 10px rgba(0,0,0,0.12);
+    }
+    .float-nav-toggle span { display: block; height: 2px; width: 100%; background: #24292f; border-radius: 2px; transition: transform .25s, opacity .25s; }
+    .float-nav-toggle.is-active span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .float-nav-toggle.is-active span:nth-child(2) { opacity: 0; }
+    .float-nav-toggle.is-active span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+    .float-nav-panel {
+      position: absolute; top: 0; left: 0;
+      width: 200px; max-height: 88vh; overflow-y: auto;
+      background: rgba(255,255,255,0.97); border: 1px solid #d0d7de; border-radius: 13px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.15); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+      padding: 10px 8px; display: none;
+    }
+    .float-nav-panel.is-open { display: block; }
+    .float-nav-brand { display: block; font-size: 1.15rem; padding: 4px 12px 10px; color: #24292f; border-bottom: 1px solid #eaecef; margin-bottom: 6px; }
+    .float-nav-item { display: block; padding: 7px 12px; border-radius: 7px; color: #24292f; font-size: 0.9rem; line-height: 1.2; text-decoration: none; transition: background .15s, color .15s; }
+    .float-nav-item:hover { background: #58a6ff; color: #fff; }
+    .float-nav-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.35); z-index: 999; }
+    .float-nav-overlay.is-open { display: block; }
+    /* Wide screens: enough side whitespace to keep the menu permanently expanded */
+    @media screen and (min-width: 1408px) {
+      .float-nav-toggle { display: none; }
+      .float-nav-panel { display: block; position: static; max-height: calc(100vh - 28px); }
+      .float-nav-overlay { display: none !important; }
+    }
   </style>
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -113,42 +166,37 @@
 </head>
 <body>
 
-<nav class="navbar site-navbar is-fixed-top" role="navigation" aria-label="main navigation">
-  <div class="navbar-brand">
-    <a class="navbar-item" href="#top">
-      <strong>Maestro</strong>
-    </a>
-    <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="siteNavbarMenu">
-      <span aria-hidden="true"></span>
-      <span aria-hidden="true"></span>
-      <span aria-hidden="true"></span>
-    </a>
-  </div>
-  <div id="siteNavbarMenu" class="navbar-menu">
-    <div class="navbar-end">
-      <a class="navbar-item" href="#overview">Overview</a>
-      <a class="navbar-item" href="#abstract">Abstract</a>
-      <a class="navbar-item" href="#method">Method</a>
-      <a class="navbar-item" href="#visualization-demo">Agent Dashboard</a>
-      <a class="navbar-item" href="#passing-map">Passing Map</a>
-      <a class="navbar-item" href="#videos">Videos</a>
-      <a class="navbar-item" href="#toolset">Toolset</a>
-      <a class="navbar-item" href="#system-prompt">System Prompt</a>
-      <a class="navbar-item" href="#evaluation">Evaluation</a>
-      <a class="navbar-item" href="#results">Results</a>
-      <a class="navbar-item" href="#vla">Maestro+VLA</a>
-      <a class="navbar-item" href="#self-evolution">Self-Evolution</a>
-      <a class="navbar-item" href="#data-collection">Data Collection</a>
-    </div>
+<!-- Floating section navigation (top-left; expands on wide screens, collapses to a drawer on smaller screens) -->
+<nav class="float-nav" id="floatNav" role="navigation" aria-label="section navigation">
+  <button class="float-nav-toggle" id="floatNavToggle" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="floatNavPanel">
+    <span aria-hidden="true"></span>
+    <span aria-hidden="true"></span>
+    <span aria-hidden="true"></span>
+  </button>
+  <div class="float-nav-panel" id="floatNavPanel">
+    <a class="float-nav-brand" href="#top"><strong>Maestro</strong></a>
+    <a class="float-nav-item" href="#overview">Overview</a>
+    <a class="float-nav-item" href="#abstract">Abstract</a>
+    <a class="float-nav-item" href="#method">Method</a>
+    <a class="float-nav-item" href="#visualization-demo">Agent Dashboard</a>
+    <a class="float-nav-item" href="#videos">Videos</a>
+    <a class="float-nav-item" href="#evaluation">Evaluation</a>
+    <a class="float-nav-item" href="#results">Results</a>
+    <a class="float-nav-item" href="#harness">The Harness</a>
+    <a class="float-nav-item" href="#passing-map">Tool-Use Analysis</a>
+    <a class="float-nav-item" href="#vla">Maestro+VLA</a>
+    <a class="float-nav-item" href="#self-evolution">Self-Evolution</a>
+    <a class="float-nav-item" href="#data-collection">Data Collection</a>
   </div>
 </nav>
+<div class="float-nav-overlay" id="floatNavOverlay"></div>
 
 <section class="hero" id="top">
   <div class="hero-body">
     <div class="container is-max-desktop">
       <div class="columns is-centered">
         <div class="column has-text-centered">
-          <h1 class="title is-1 publication-title">Maestro: Orchestrating Robotics Modules with Vision-Language Models for Zero-Shot Generalist Robots</h1>
+          <h1 class="title is-1 publication-title">Maestro: Orchestrating Robotics Modules with Coding Agents for Zero-Shot Generalist Robots</h1>
           
           <!-- Authors (anonymized for double-blind review) -->
           <div class="is-size-4 publication-authors">
@@ -162,7 +210,6 @@
             <span class="author-block">Selina Wan,</span>
             <span class="author-block">Yifei Shao,</span>
             <span class="author-block">Jiahui Lei,</span>
-            <br>
             <span class="author-block">Jianing Qian,</span>
             <span class="author-block">Long Le,</span>
             <span class="author-block">Pratik Chaudhari,</span>
@@ -176,7 +223,7 @@
             <span class="author-block">contributed to Mobile Manipulation system development</span>
           </div>
           -->
-
+          
 
           <!-- Affiliations (institution + workshop acceptances hidden for double-blind review) -->
           <div class="is-size-4 publication-authors">
@@ -224,7 +271,7 @@
                 </a>
               </span>
               -->
-              <!-- Interactive Viz Link. --> 
+              <!-- Interactive Viz Link. -->
               <span class="link-block">
                 <a href="./Interactive_visualization/"
                    class="external-link button is-normal is-rounded is-dark">
@@ -287,7 +334,7 @@
     <div class="columns is-centered has-text-centered">
       <div class="column is-full-width">
         <video controls width="100%" style="border-radius: 10px;" autoplay loop muted>
-          <source src="./static/videos/concept_video.mp4" type="video/mp4">
+          <source src="./static/videos/concept_v2.mp4" type="video/mp4">
           Your browser does not support the video tag.
         </video>
       </div>
@@ -303,14 +350,15 @@
         <h2 class="title is-3">Overview of Maestro</h2>
         <div class="content has-text-justified">
           <p>
-            <strong>TLDR</strong>: We introduce <strong>Maestro</strong>, a VLM coding agent that composes diverse robotics-related tool modules into programmatic policies. Maestro represents <strong>the first competitive <em>modular</em> policy for generalist robots</strong>:
+            <strong>TLDR</strong>: We introduce <strong>Maestro</strong>, a VLM coding agent that dynamically composes curated, best-in-class robotics modules into programmatic, closed-loop policies. Its core contribution is a <strong>robotics-specific harness</strong> that makes composing these error-prone external tools actually work in the open, dynamic real world. Maestro represents <strong>the first competitive <em>modular</em> generalist policy</strong>:
           </p>
           <ul style="text-align: left;">
-            <li>Achieves substantially stronger zero-shot performance than current general-purpose VLA models in challenging manipulation settings</li>
-            <li>Interpretable, debuggable, and easily extensible to new tools and robot embodiments</li>
+            <li>A robotics-specific harness wraps error-prone tool chains in robust calls, renders their outputs back for the VLM to verify, and closes the loop to recover from failures; ablations show the same tools <em>without</em> this harness barely help and can even drop below the no-tool baseline</li>
+            <li>Matches or surpasses state-of-the-art VLA models zero-shot, with the largest gains in settings underrepresented in VLA training data, using no new teleoperation data</li>
+            <li>Interpretable, debuggable, and easily extensible to new tools and robot embodiments (including a quadruped-mounted arm)</li>
             <li>Improves from a handful of real-world trials via local code edits</li>
-            <li>Strategically employs VLA models as tools for both speed and performance</li>
-            <li>Enables fully autonomous data collection &mdash; generates high-quality seed demonstrations that, combined with data augmentation frameworks, produce policies rivaling those trained on human-collected data</li>
+            <li>Can call a VLA as one of its tools for both speed and performance</li>
+            <li>Autonomously generates real-world trajectories that, combined with data-augmentation frameworks, produce policies rivaling those trained on human-collected data</li>
           </ul>
         </div>
         <figure class="image">
@@ -346,7 +394,8 @@
         <h2 class="title is-3">Abstract</h2>
         <div class="content has-text-justified">
           <p>
-            Today's best-explored routes towards generalist robots center on collecting ever larger "observations-in actions-out" robotics datasets to train large end-to-end models, copying a recipe that has worked for vision-language models (VLMs). We pursue a road less traveled: building generalist policies directly around VLMs by augmenting their general capabilities with specific robot capabilities encapsulated in a carefully curated set of perception, planning, control, and learned policy modules, including vision-language-action (VLA) models. In Maestro, a VLM coding agent dynamically composes these modules into a programmatic policy for the current task and scenario. Maestro's architecture benefits from a streamlined closed-loop interface that grants the agent substantial autonomy to monitor, react, and replan without many manually imposed structural constraints, and a comprehensive and diverse tool repertoire. As a result, it achieves substantially stronger zero-shot performance than current general-purpose VLA models in challenging manipulation settings, particularly those underrepresented in their training data. Further, Maestro is easily extensible to incorporate new modules, easily editable to suit new embodiments such as a quadruped-mounted arm, and even easily adapts from minimal real-world experiences through local code edits. Maestro's autonomous real-world trajectories can additionally be leveraged to train fast and robust policies. Together, these results suggest that Maestro provides a practical path toward scaling autonomous robot deployment and data collection in diverse real-world settings.
+            Today's dominant route to generalist robots scales up "observations-in, actions-out" teleoperation datasets to train large end-to-end models, echoing the recipe behind vision-language models (VLMs). We pursue a road less traveled: building generalist policies directly around VLMs, augmenting their broad capabilities with a curated set of perception, planning, and control modules. In <strong>Maestro</strong>, a VLM coding agent dynamically composes these modules into a programmatic, closed-loop policy that monitors execution and replans autonomously. It shares the coding-agent pattern of prior code-as-policies (CaP) systems, but unlike a coding agent acting on files it controls, a robotics agent controls neither its tools nor the open, dynamic world they act in, so any tool can fail unpredictably. <strong>Maestro's core contribution is a robotics-specific harness</strong> that makes composing curated external robotics models actually work, wrapping error-prone tool chains in robust calls, rendering their outputs back for the VLM to verify, and closing the loop to recover from failures. Ablations show that adding the same tools without this harness barely helps and can even drop performance below the original no-tool baseline. Across challenging tabletop and mobile manipulation tasks, and with no new teleoperation data, this lets a zero-shot coding agent match or surpass state-of-the-art vision-language-action (VLA) models, with the largest gains in settings underrepresented in VLA training data, making Maestro <strong>the first competitive modular generalist policy</strong>. Maestro can further call a VLA as one of its tools and autonomously generate real-world trajectories for downstream learning. We argue that building out this kind of agentic system is a complementary, far less-explored axis to data scaling for general-purpose robots.
+          </p>
         </div>
       </div>
     </div>
@@ -391,39 +440,26 @@
   </div>
 </section>
 
-<!-- Interactive Passing Map -->
-<section class="section" id="passing-map">
+<!-- Failure-Mode Analysis section removed (not in the paper); commented out below.
+<section class="section" id="failure-analysis">
   <div class="container is-max-desktop">
     <div class="columns is-centered has-text-centered">
       <div class="column is-full-width">
-        <h2 class="title is-3">Tool-Use Passing Map</h2>
+        <h2 class="title is-3">Failure-Mode Analysis</h2>
         <div class="content has-text-justified">
           <p>
-            To quantify Maestro's tool orchestration patterns, we analyze <strong>2,062 function calls</strong> across <strong>62 manipulation trials</strong> spanning <strong>9 task categories</strong>.
-            The passing map visualizes <strong>inter-module transition frequencies</strong>, revealing how perception, control, grasping, and planning modules are dynamically chained together.
-            Filter by task type to compare orchestration strategies across different manipulation scenarios, including trials that incorporate <strong>VLA (π0.5)</strong> as an additional tool.
+            Across all 71 Maestro tabletop trials, 55 succeed and 16 fail. The Sankey diagram below decomposes the 16 failures into coarse categories and then specific causes: motion-planning / kinematic errors (8), grasp failures (5), and one instance each of perception, VLA-policy, and VLM-planning failure. These residual failures concentrate in perception and low-level control, where a module is systematically wrong in a way the harness cannot observe or route around.
           </p>
         </div>
-
-        <div class="mb-4">
-          <button class="button is-medium is-rounded is-dark" id="passmapFullscreenBtn">
-            <span class="icon"><i class="fas fa-expand"></i></span>
-            <span>Expand to Fullscreen</span>
-          </button>
-        </div>
-
-        <div class="vis-demo-container" id="passmapContainer">
-          <iframe src="./Interactive_visualization/interactive_network.html"
-                  title="Maestro Tool-Use Passing Map"
-                  allowfullscreen></iframe>
-        </div>
-        <button class="vis-demo-close-btn" id="passmapCloseBtn">
-          <i class="fas fa-times"></i>&ensp;Close
-        </button>
+        <figure class="image">
+          <img src="./static/images/sankey_diagram.png">
+          <figcaption class="subtitle is-6 mt-2">Sankey diagram of Maestro trial outcomes and failure categories across all 71 tabletop trials.</figcaption>
+        </figure>
       </div>
     </div>
   </div>
 </section>
+-->
 
 <!-- Video Demonstrations Section -->
 <section class="section" id="videos">
@@ -576,9 +612,10 @@
   </div>
 </section>
 
+<!-- Toolset Overview section removed (not in the paper); commented out below.
 <section class="section" id="toolset">
   <div class="container is-max-desktop">
-    <!-- Method. -->
+    Method.
     <div class="columns is-centered has-text-centered">
       <div class="column is-full-width">
         <h2 class="title is-3">Toolset Overview</h2>
@@ -629,7 +666,7 @@
 
 <section class="section" id="system-prompt">
   <div class="container is-max-desktop">
-    <!-- Method. -->
+    Method.
     <div class="columns is-centered has-text-centered">
       <div class="column is-half">
         <h2 class="title is-3">System Prompt</h2>
@@ -645,6 +682,7 @@
     </div>
   </div>
 </section>
+-->
 
 <section class="section" id="evaluation">
   <div class="container is-max-desktop">
@@ -654,13 +692,19 @@
         <h2 class="title is-3">Systematic Generalization for Evaluation</h2>
         <div class="content has-text-justified">
           <p>
-            Our evaluation protocol is designed for systematic experimentation, adopting the <strong><a href="https://stargen-taxonomy.github.io/">STAR-Gen</a> taxonomy</strong> of generalization for robot manipulation. STAR-Gen formalizes testing by creating systematic perturbations relative to a base task. We leverage the STAR-Gen scenario generation tool, prompting Gemini to generate diverse task instances across four key axes: <strong>visual changes to task-relevant objects</strong>, <strong>changes to object poses</strong>, <strong>changes to action verbs requiring new behavior</strong>, and <strong>introducing entirely new manipulated objects</strong>, This approach ensures that every trial differs substantially and meaningfully from the rest, capturing realistic in-the-wild diversity and providing a rigorous test of Maestro's robustness and adaptability. The table below presents the experimental setup and results comparison for each task trial.
+            Our evaluation protocol is designed for systematic experimentation, adopting the <strong><a href="https://stargen-taxonomy.github.io/">STAR-Gen</a> taxonomy</strong> of generalization for robot manipulation. STAR-Gen formalizes testing by creating systematic perturbations relative to a base task. We leverage the STAR-Gen scenario generation tool, prompting Gemini to generate diverse task instances across four key axes: <strong>visual changes to task-relevant objects</strong>, <strong>changes to object poses</strong>, <strong>changes to action verbs requiring new behavior</strong>, and <strong>introducing entirely new manipulated objects</strong>. This approach ensures that every trial differs substantially and meaningfully from the rest, capturing realistic in-the-wild diversity and providing a rigorous test of Maestro's robustness and adaptability. The figure below visualizes every individual trial: each row is a task, showing the original setting alongside its five STAR-Gen evaluation trials. Above each trial image, a gradient bar runs from white (0 progress) to black (100 progress), and colored triangular markers (&#9660;) denote each method's score on that trial.
           </p>
         </div>
         <br>
         <figure class="image">
           <img src="./static/images/star_gen_figure.png">
+          <figcaption class="subtitle is-6 mt-2">Per-trial visualization of tabletop manipulation results across the STAR-Gen perturbations.</figcaption>
         </figure>
+        <div class="content has-text-justified">
+          <p>
+            Notably, Maestro's markers stay clustered near the high end of the bar across nearly all trials and tasks, reflecting consistently strong performance regardless of the specific perturbation. In contrast, &pi;<sub>0</sub> and &pi;<sub>0.5</sub> show high variance: because VLAs are predominantly trained on pick-and-place data, they can score perfectly on some trials yet collapse under background changes, altered object poses, or unfamiliar verb phrasing. This trial-level inconsistency directly explains the large standard errors of the VLA baselines, and underscores their brittleness to distributional shifts in visual and semantic context.
+          </p>
+        </div>
       </div>
     </div>
   </div>
@@ -683,13 +727,14 @@
             Maestro substantially outperforms all VLA and CaP baselines across challenging manipulation tasks. This success stems from combining the VLM's high-level semantic reasoning with specialized tools for low-level execution precision; while VLA models struggle with out-of-distribution scenarios (like articulated objects) and lack memory, Maestro remains robust and adaptable.          </p>
         </div>
         <figure class="image">
-          <img src="./static/images/main_table_bar_plot.png">
+          <img src="./static/images/data_sheet_bar_chart.png">
+          <figcaption class="subtitle is-6 mt-2">Tabletop manipulation results: average task progress (0&ndash;100; higher is better).</figcaption>
         </figure>
         <br>
       </div>
     </div>
   </div>
-  
+
   <div class="container is-max-desktop">
     <div class="columns is-centered has-text-centered">
       <div class="column is-full-width">
@@ -703,9 +748,110 @@
           <div class="column is-half">
             <figure class="image">
               <img src="./static/images/mobile_results.png">
+              <figcaption class="subtitle is-6 mt-2">Mobile manipulation results: average task progress (0&ndash;100; higher is better).</figcaption>
             </figure>
           </div>
         </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Harness Section -->
+<section class="section" id="harness">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-full-width">
+        <h2 class="title is-3">Why Orchestration Matters: The Harness</h2>
+        <div class="content has-text-justified">
+          <p>
+            Maestro shares the closed-loop coding-agent pattern of prior code-as-policies systems, but unlike a coding agent acting on files it controls, a <strong>robotics agent controls neither its tools nor the open, dynamic world they act in</strong>, so any tool can fail unpredictably. Maestro's core contribution is a <strong>robotics-specific harness</strong> that makes composing curated external robotics models actually work: it wraps error-prone tool chains in robust calls, renders their outputs back for the VLM to verify, and closes the loop to detect and recover from failures.
+          </p>
+          <p>
+            We isolate the harness with an additive scaling study, stacking tool groups on top of a Base CaP agent (S0): S1 (+perception), S2 (+grasp/control), S3 (+geometry). With Maestro's full harness, average task progress climbs monotonically. With the <em>identical</em> tools exposed as atomic calls (<strong>no harness</strong>), performance is far lower, even dropping below the original Base CaP baseline once perception and grasping tools must be composed, and only partially recovers. The gap shows that <strong>orchestration, not raw tool availability, is the bottleneck</strong>.
+          </p>
+        </div>
+        <div class="columns is-centered">
+          <div class="column is-two-thirds">
+            <figure class="image">
+              <img src="./static/images/harness_scaling.png">
+              <figcaption class="subtitle is-6 mt-2">Scaling Maestro's tools and harness together: average task progress (mean over open cabinet, rotate cube, cut banana) as tool groups are added on top of Base CaP (S0), with and without the harness.</figcaption>
+            </figure>
+          </div>
+        </div>
+        <br>
+        <div class="content has-text-justified">
+          <p>
+            <strong>A concrete replan iteration.</strong> The closed loop matters in practice. Below, on <em>"erase the characters on the whiteboard,"</em> the first generated <code>actor_code</code> grasps 1&nbsp;cm too high. From the post-execution image and robot state, Maestro's <strong><em>replan</em></strong> step rewrites a single line (<code>grasp_pos[2]</code>) and the retry succeeds, completing the task with no further replans.
+          </p>
+        </div>
+        <div class="columns is-centered">
+          <div class="column is-three-quarters">
+            <figure class="image">
+              <img src="./static/images/replan_figure.png">
+              <figcaption class="subtitle is-6 mt-2">One replan iteration: the agent diagnoses a too-high grasp from visual feedback and edits a single line of code to recover.</figcaption>
+            </figure>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Tool-Use Analysis -->
+<section class="section" id="passing-map">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-full-width">
+        <h2 class="title is-3">Tool-Use Analysis</h2>
+        <div class="content has-text-justified">
+          <p>
+            To quantify Maestro's tool orchestration patterns, we analyze <strong>2,062 function calls</strong> across <strong>62 manipulation trials</strong> spanning <strong>9 task categories</strong>.
+            The passing map visualizes <strong>inter-module transition frequencies</strong>, revealing how perception, control, grasping, and planning modules are dynamically chained together.
+            Filter by task type to compare orchestration strategies across different manipulation scenarios, including trials that incorporate <strong>VLA (π0.5)</strong> as an additional tool.
+          </p>
+        </div>
+
+        <div class="mb-4">
+          <button class="button is-medium is-rounded is-dark" id="passmapFullscreenBtn">
+            <span class="icon"><i class="fas fa-expand"></i></span>
+            <span>Expand to Fullscreen</span>
+          </button>
+        </div>
+
+        <div class="vis-demo-container" id="passmapContainer">
+          <iframe src="./Interactive_visualization/interactive_network.html"
+                  title="Maestro Tool-Use Passing Map"
+                  allowfullscreen></iframe>
+        </div>
+        <button class="vis-demo-close-btn" id="passmapCloseBtn">
+          <i class="fas fa-times"></i>&ensp;Close
+        </button>
+
+        <div class="content has-text-justified mt-6">
+          <p>
+            Beyond the interactive view above, we render the same <strong>2,062 tool calls</strong> (drawn from <strong>18 modules</strong> across <strong>62 trials</strong> and <strong>9 task categories</strong>) as static analyses. The aggregate statistics show per-module call frequencies, calls grouped by category, and the most common function bigrams.
+          </p>
+        </div>
+        <figure class="image">
+          <img src="./static/images/passmap_summary.png">
+          <figcaption class="subtitle is-6 mt-2">Aggregate tool-use statistics across 62 Maestro tabletop trials (2,062 calls across 18 modules in 6 categories).</figcaption>
+        </figure>
+        <br>
+        <figure class="image">
+          <img src="./static/images/tool_passmap_all.jpg">
+          <figcaption class="subtitle is-6 mt-2">Full Maestro tool-use passmap. Nodes are tool modules color-coded by category (perception, control, gripper, grasping, geometry, VLA); node size is proportional to call count and edge width to transition frequency.</figcaption>
+        </figure>
+        <br>
+        <div class="content has-text-justified">
+          <p>
+            <strong>Workflows are task-conditioned, not universal.</strong> The most-called modules and the dominant transitions differ across categories: deformable tasks rely on keypoint re-tracking cycles; articulated tasks chain pointing &rarr; bounding-box &rarr; grasp planning &rarr; motion; long-horizon tasks insert re-perception cycles between subtasks. It is the graph topology, not just the call counts, that changes with the task, so Maestro composes a task-specific workflow rather than selecting a fixed pipeline.
+          </p>
+        </div>
+        <figure class="image">
+          <img src="./static/images/passing_map_collage.png">
+          <figcaption class="subtitle is-6 mt-2">Per-task tool-use passmap thumbnails. Dominant edges and most-called modules differ across categories, illustrating task-specific composition.</figcaption>
+        </figure>
       </div>
     </div>
   </div>
@@ -719,9 +865,9 @@
         <h2 class="title is-3">Maestro Guides VLA for Efficient Action</h2>
         <div class="content has-text-justified">
           <p>
-            Maestro achieves improved efficiency and performance through the integrated use of a VLM and VLA tool module. The VLM leverages its sophisticated reasoning capability to interpret complex user instructions and provide detailed, accurate observational reasoning. The VLA functions as a fast and powerful "muscle," quickly completing simple, well-trained subtasks such as pick and place. This strategic division of labor allows the Maestro+VLA system to execute complex commands both quickly and accurately.
+            Maestro's default tool library includes a VLA (&pi;<sub>0.5</sub>) as a callable pick-and-place module. The VLM leverages its reasoning capability to interpret complex instructions and provide accurate observational reasoning, while the VLA functions as a fast, reliable "muscle" that quickly completes short, in-distribution subtasks such as pick and place. On the long-horizon <em>"clean up the table, largest object first"</em> task, this division of labor lets <strong>Maestro w/ &pi;<sub>0.5</sub></strong> reach <strong>94%</strong> progress while cutting completion time from 11'18" to 4'59" (a <strong>2.3&times; speedup</strong>) over <strong>Maestro w/o &pi;<sub>0.5</sub></strong>. In contrast, &pi;<sub>0.5</sub> and &pi;<sub>0</sub> alone reach only 17% and 21%, since neither can sustain the size-based ordering. VLAs and Maestro are thus complementary: VLAs serve as fast, reliable skill modules, and Maestro provides the orchestration to deploy them on tasks they cannot solve in isolation.
           </p>
-        </div>        
+        </div>
         <div class="columns is-centered">
           <div class="column is-full-width">
             <div class="video-container">
@@ -735,10 +881,20 @@
         </div>
         <br>
         <div class="columns is-centered">
-          <div class="column is-full-width">
-          <figure class="image">
-            <img src="./static/images/vla_graph.jpg">
-          </figure>
+          <div class="column is-two-thirds">
+            <table class="table is-bordered is-striped is-hoverable is-fullwidth">
+              <thead>
+                <tr><th>Method</th><th class="has-text-centered">Progress (%)</th><th class="has-text-centered">Time</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>Maestro w/o &pi;<sub>0.5</sub></td><td class="has-text-centered">89 &plusmn; 11.3</td><td class="has-text-centered">11'18"</td></tr>
+                <tr><td><strong>Maestro w/ &pi;<sub>0.5</sub></strong></td><td class="has-text-centered"><strong>94 &plusmn; 11.0</strong></td><td class="has-text-centered"><strong>4'59"</strong></td></tr>
+                <tr><td>&pi;<sub>0.5</sub></td><td class="has-text-centered">17 &plusmn; 20.3</td><td class="has-text-centered">2'16"</td></tr>
+                <tr><td>&pi;<sub>0</sub></td><td class="has-text-centered">21 &plusmn; 14.8</td><td class="has-text-centered">2'58"</td></tr>
+                <tr><td>Gemini Robotics</td><td class="has-text-centered">80 &plusmn; 6.8</td><td class="has-text-centered">11'53"</td></tr>
+              </tbody>
+            </table>
+            <p class="subtitle is-6 mt-2">Maestro with and without &pi;<sub>0.5</sub> as a callable pick-and-place tool, on <em>"clean up the table, largest object first."</em> Average task progress (0&ndash;100; higher is better) with standard deviation, and average wall-clock completion time.</p>
           </div>
         </div>
       </div>
@@ -762,7 +918,28 @@
         </div>
         <figure class="image">
           <img src="./static/images/figure_code_evolution.png">
+          <figcaption class="subtitle is-6 mt-2">Open-cabinet case study: across four autonomous trials, Maestro evolves from a naive linear pull to a kinematically grounded arc policy with robust grasp stabilization.</figcaption>
         </figure>
+        <br>
+        <div class="content has-text-justified">
+          <p>
+            The cross-trial evolution loop wraps Maestro's per-trial execution loop: each trial is planned with the accumulated across-trial history <em>H</em> in context, and the trial's trace is appended to <em>H</em> for the next attempt.
+          </p>
+        </div>
+        <div class="algo-box">
+          <div class="algo-title">Algorithm 2 &nbsp;&middot;&nbsp; Maestro execution-and-evolution loop</div>
+          <pre class="algo-pre"><code><span class="algo-kw">Require:</span> task <em>T</em>, initial image <em>I</em><sub>0</sub>, tool library <em>M</em>, system prompt <em>P</em><sub>sys</sub>, VLM &pi;, max trials <em>N</em>, per-trial substep budget <em>S</em>
+ 1  <em>H</em> &larr; &empty;                                  <span class="algo-cmt"># across-trial history</span>
+ 2  <span class="algo-kw">for</span> trial <em>n</em> = 1 &hellip; <em>N</em> <span class="algo-kw">do</span>
+ 3      <em>h<sub>n</sub></em> &larr; [ ]
+ 4      <em>c</em> &larr; &pi;<sub>plan</sub>(<em>P</em><sub>sys</sub>, <em>T</em>, <em>I</em><sub>0</sub>, <em>H</em>)         <span class="algo-cmt"># plan task; emit code for first substep</span>
+ 5      <span class="algo-kw">for</span> substep <em>k</em> = 1 &hellip; <em>S</em> <span class="algo-kw">do</span>
+ 6          (<em>o</em>, <em>I</em>) &larr; Execute(<em>c</em>; <em>M</em>)             <span class="algo-cmt"># run substep code to completion</span>
+ 7          append (<em>c</em>, <em>o</em>, <em>I</em>) to <em>h<sub>n</sub></em>
+ 8          (&sigma;, <em>c</em>) &larr; &pi;<sub>react</sub>(<em>T</em>, <em>c</em>, <em>o</em>, <em>I</em>, <em>h<sub>n</sub></em>)    <span class="algo-cmt"># judge substep, then emit next or replanned code</span>
+ 9          <span class="algo-kw">if</span> &sigma; = TaskComplete <span class="algo-kw">then break</span>
+10      <em>H</em> &larr; <em>H</em> &cup; { <em>h<sub>n</sub></em> }                     <span class="algo-cmt"># persist trace as in-context history for next trial</span></code></pre>
+        </div>
       </div>
     </div>
   </div>
@@ -823,7 +1000,6 @@
 
 <!-- BibTeX Citation section removed for anonymous submission. -->
 
-
 <footer class="footer">
   <div class="container">
     <div class="columns is-centered">
@@ -840,21 +1016,35 @@
 
 <script>
   document.addEventListener('DOMContentLoaded', function () {
-    // ── Mobile navbar burger toggle ──
-    var burger = document.querySelector('.site-navbar .navbar-burger');
-    var menu = document.getElementById('siteNavbarMenu');
-    if (burger && menu) {
-      burger.addEventListener('click', function () {
-        burger.classList.toggle('is-active');
-        menu.classList.toggle('is-active');
+    // ── Floating section navigation toggle ──
+    var fnToggle  = document.getElementById('floatNavToggle');
+    var fnPanel   = document.getElementById('floatNavPanel');
+    var fnOverlay = document.getElementById('floatNavOverlay');
+
+    function setFloatNav(open) {
+      if (!fnPanel) return;
+      fnPanel.classList.toggle('is-open', open);
+      if (fnToggle) {
+        fnToggle.classList.toggle('is-active', open);
+        fnToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+      }
+      if (fnOverlay) fnOverlay.classList.toggle('is-open', open);
+    }
+
+    if (fnToggle && fnPanel) {
+      fnToggle.addEventListener('click', function () {
+        setFloatNav(!fnPanel.classList.contains('is-open'));
       });
-      menu.querySelectorAll('.navbar-item').forEach(function (item) {
-        item.addEventListener('click', function () {
-          burger.classList.remove('is-active');
-          menu.classList.remove('is-active');
-        });
+      fnPanel.querySelectorAll('.float-nav-item, .float-nav-brand').forEach(function (item) {
+        item.addEventListener('click', function () { setFloatNav(false); });
       });
     }
+    if (fnOverlay) {
+      fnOverlay.addEventListener('click', function () { setFloatNav(false); });
+    }
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') setFloatNav(false);
+    });
 
     // ── Visualization Demo trial toggle ──
     document.querySelectorAll('.trial-toggle .trial-btn').forEach(function (btn) {
