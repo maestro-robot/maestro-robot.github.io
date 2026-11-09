@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="800" viewBox="0 0 1280 800"><rect width="100%" height="100%" fill="#f7f5ef"/>
+<text x="50" y="69.44" font-family="Arial, Helvetica, sans-serif" font-size="42" font-weight="700" fill="#12323d">Tools + harness, tested on real robots</text>
+<text x="50" y="115.14" font-family="Arial, Helvetica, sans-serif" font-size="27" font-weight="400" fill="#536873">MAESTRO · Gemini Robotics-ER 1.5</text>
+<line x1="52" y1="165" x2="98" y2="165" stroke="#087f83" stroke-width="6" stroke-linecap="round"/>
+<text x="112" y="172.96" font-family="Arial, Helvetica, sans-serif" font-size="28" font-weight="700" fill="#087f83">Full MAESTRO harness</text>
+<line x1="680" y1="165" x2="726" y2="165" stroke="#87969c" stroke-width="6" stroke-linecap="round"/>
+<text x="740" y="172.96" font-family="Arial, Helvetica, sans-serif" font-size="28" font-weight="400" fill="#536873">Without added I/E support</text>
+<text x="50" y="230.5" font-family="Arial, Helvetica, sans-serif" font-size="25" font-weight="400" fill="#536873">Mean task progress (0–100)</text>
+<line x1="130" y1="598.0" x2="1165" y2="598.0" stroke="#dce4e3" stroke-width="2" stroke-linecap="round"/>
+<text x="75" y="604.68" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="400" fill="#536873">0</text>
+<line x1="130" y1="516.75" x2="1165" y2="516.75" stroke="#dce4e3" stroke-width="2" stroke-linecap="round"/>
+<text x="75" y="523.43" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="400" fill="#536873">25</text>
+<line x1="130" y1="435.5" x2="1165" y2="435.5" stroke="#dce4e3" stroke-width="2" stroke-linecap="round"/>
+<text x="75" y="442.18" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="400" fill="#536873">50</text>
+<line x1="130" y1="354.25" x2="1165" y2="354.25" stroke="#dce4e3" stroke-width="2" stroke-linecap="round"/>
+<text x="75" y="360.93" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="400" fill="#536873">75</text>
+<line x1="130" y1="273.0" x2="1165" y2="273.0" stroke="#dce4e3" stroke-width="2" stroke-linecap="round"/>
+<text x="75" y="279.68" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="400" fill="#536873">100</text>
+<line x1="145" y1="492.91666666666663" x2="455" y2="522.1666666666666" stroke="#87969c" stroke-width="6" stroke-linecap="round"/>
+<line x1="455" y1="522.1666666666666" x2="765" y2="530.8333333333334" stroke="#87969c" stroke-width="6" stroke-linecap="round"/>
+<line x1="765" y1="530.8333333333334" x2="1075" y2="490.75" stroke="#87969c" stroke-width="6" stroke-linecap="round"/>
+<circle cx="145" cy="492.91666666666663" r="8" fill="#87969c"/>
+<circle cx="455" cy="522.1666666666666" r="8" fill="#87969c"/>
+<circle cx="765" cy="530.8333333333334" r="8" fill="#87969c"/>
+<circle cx="1075" cy="490.75" r="8" fill="#87969c"/>
+<line x1="145" y1="492.91666666666663" x2="455" y2="455.0" stroke="#087f83" stroke-width="6" stroke-linecap="round"/>
+<line x1="455" y1="455.0" x2="765" y2="410.58333333333337" stroke="#087f83" stroke-width="6" stroke-linecap="round"/>
+<line x1="765" y1="410.58333333333337" x2="1075" y2="348.0595238095238" stroke="#087f83" stroke-width="6" stroke-linecap="round"/>
+<circle cx="145" cy="492.91666666666663" r="8" fill="#087f83"/>
+<circle cx="455" cy="455.0" r="8" fill="#087f83"/>
+<circle cx="765" cy="410.58333333333337" r="8" fill="#087f83"/>
+<circle cx="1075" cy="348.0595238095238" r="8" fill="#087f83"/>
+<text x="116" y="475.6966666666666" font-family="Arial, Helvetica, sans-serif" font-size="29" font-weight="700" fill="#087f83">32.3</text>
+<text x="426" y="437.78" font-family="Arial, Helvetica, sans-serif" font-size="29" font-weight="700" fill="#087f83">44.0</text>
+<text x="736" y="393.36333333333334" font-family="Arial, Helvetica, sans-serif" font-size="29" font-weight="700" fill="#087f83">57.7</text>
+<text x="1046" y="330.83952380952377" font-family="Arial, Helvetica, sans-serif" font-size="29" font-weight="700" fill="#087f83">76.9</text>
+<text x="428" y="563.3066666666666" font-family="Arial, Helvetica, sans-serif" font-size="27" font-weight="700" fill="#536873">23.3</text>
+<text x="738" y="571.9733333333334" font-family="Arial, Helvetica, sans-serif" font-size="27" font-weight="700" fill="#536873">20.7</text>
+<text x="1048" y="531.89" font-family="Arial, Helvetica, sans-serif" font-size="27" font-weight="700" fill="#536873">33.0</text>
+<text x="125" y="643.78" font-family="Arial, Helvetica, sans-serif" font-size="29" font-weight="700" fill="#12323d">S0</text>
+<text x="79.0" y="678.68" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="400" fill="#536873">Basic tools</text>
+<text x="435" y="643.78" font-family="Arial, Helvetica, sans-serif" font-size="29" font-weight="700" fill="#12323d">S1</text>
+<text x="383.0" y="678.68" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="400" fill="#536873">+ Perception</text>
+<text x="745" y="643.78" font-family="Arial, Helvetica, sans-serif" font-size="29" font-weight="700" fill="#12323d">S2</text>
+<text x="663.0" y="678.68" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="400" fill="#536873">+ Grasp / control</text>
+<text x="1055" y="643.78" font-family="Arial, Helvetica, sans-serif" font-size="29" font-weight="700" fill="#12323d">S3</text>
+<text x="1015.0" y="678.68" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="400" fill="#536873">+ Geometry</text>
+<text x="50" y="732.68" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="400" fill="#536873">Three tasks · n=5 per cell; full S3 cube n=7 · Shared S0 trials</text>
+<text x="50" y="769.68" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="400" fill="#536873">Partial progress, not success rate. Basic feedback remains in both conditions.</text>
+</svg>

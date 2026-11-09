@@ -27,6 +27,10 @@ figure.image figcaption { margin-top: 14px !important; color: #697078; line-heig
 figure.image img { height: auto; }
 .result-figure { margin-top: 26px; }
 .harness-figure { width: 100%; }
+.harness-summary-figure { max-width: 960px; margin: 24px auto 0; }
+.harness-details { margin: 24px 0 32px; padding: 16px 20px; border: 1px solid #e0e3e6; border-radius: 8px; background: #fafafa; text-align: left; }
+.harness-details > summary { cursor: pointer; color: #333; font-weight: 600; }
+.harness-details[open] > summary { margin-bottom: 20px; }
 .table-scroll { overflow-x: auto; }
 .table-scroll table { min-width: 470px; }
 .study-label { display: inline-block; margin-bottom: 12px; color: #697078; font-size: .78rem; letter-spacing: .07em; text-transform: uppercase; }

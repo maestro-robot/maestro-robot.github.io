@@ -32,7 +32,7 @@
   <link rel="stylesheet"
         href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
   <link rel="stylesheet" href="./static/css/index.css">
-  <link rel="stylesheet" href="./static/css/camera-ready.css">
+  <link rel="stylesheet" href="./static/css/camera-ready.css?v=fcff431c">
   <script defer src="./static/js/contents.js"></script>
   <link rel="icon" href="./static/images/Maestro.ico">
 
@@ -593,9 +593,26 @@
     <div class="columns is-centered">
       <div class="column is-full-width has-text-centered">
         <h2 class="title is-3">Tools and harnesses work together</h2>
-        <div class="content has-text-justified"><p>MAESTRO builds on the closed-loop coding-agent pattern of Base CaP. Its <strong>orchestration harness</strong> packages multi-step procedures into callable tools, provides procedural guidance, manages execution, and renders tool outputs so the VLM can inspect them and replan.</p>
-<p>We expand the library from Base CaP (S0) through perception (S1), grasping and control (S2), and geometry (S3). At each stage we compare <strong>Full harness (I+E), Interface only (I), Execution only (E), and No harness</strong>. Interface retains encapsulation and procedural knowledge; Execution retains closed-loop control, infrastructure, and feedback.</p>
-<p>Across the three ablation tasks, the full-tool average is <strong>76.9</strong> with the full harness, <strong>59.3</strong> with Interface only, <strong>34.0</strong> with Execution only, and <strong>33.0</strong> without the harness. The starting point without added robotics tools scores <strong>32.3</strong>. Expanding the library improves average progress with the full harness; adding tools alone does not reliably improve progress.</p></div><figure class="image harness-figure"><img src="./static/images/harness_scaling.png" alt="Four harness conditions across cut banana, rotate cube, and open cabinet, from S0 to S3" loading="lazy" width="1800" height="332"><figcaption class="subtitle is-6 mt-2">Mean task progress for cut banana, rotate cube, and open cabinet as tool groups are added to Base CaP. The four conditions are Full harness (I+E), Interface only (I), Execution only (E), and No harness. Error bars show per-task standard errors, computed as sample SD divided by √n for each task–stage–condition cell. S0 uses the same five baseline trials per task for all four curves.</figcaption></figure><div class="content has-text-justified"><p><strong>A concrete replan iteration.</strong> On the whiteboard-erase task, the first generated <code>actor_code</code> grasps 1 cm too high. Using the post-execution image and robot state, MAESTRO revises <code>grasp_pos[2]</code>, and the retry succeeds.</p></div><div class="columns is-centered"><div class="column is-three-quarters"><figure class="image "><img src="./static/images/replan_figure.png" alt="Visual feedback and a one-line code correction after a failed eraser grasp" loading="lazy" width="1314" height="1262"><figcaption class="subtitle is-6 mt-2">One replan iteration: visual feedback lets the agent diagnose the grasp and revise the code.</figcaption></figure></div></div>
+        <div class="content has-text-justified">
+          <p>MAESTRO builds on the closed-loop coding-agent pattern of Base CaP. Its <strong>orchestration harness</strong> packages multi-step procedures into callable tools, provides procedural guidance, manages execution, and renders tool outputs so the VLM can inspect them and replan.</p>
+          <p>We expand the library from Base CaP (S0) through perception (S1), grasping and control (S2), and geometry (S3). Across the three ablation tasks, average progress rises from <strong>32.3</strong> to <strong>76.9</strong> with the full harness, compared with <strong>33.0</strong> at S3 without the added harness support. Expanding the tool library improves average progress with the full harness; adding tools alone does not reliably improve progress.</p>
+        </div>
+        <figure class="image harness-figure harness-summary-figure">
+          <img src="./static/images/harness_scaling_summary.svg" alt="Average task progress as tools are added: full MAESTRO harness rises from 32.3 at S0 to 44.0, 57.7, and 76.9; without added interface and execution support, progress is 32.3, 23.3, 20.7, and 33.0" loading="lazy" width="1280" height="800">
+          <figcaption>Equal-weight average of the cut banana, rotate cube, and open cabinet task means (0–100). The comparison is Full harness versus No harness, labeled “Without added I/E support” in the plot; both retain basic feedback. Aggregate error bars are omitted; per-task means and standard errors are available below. <a href="./static/images/harness_scaling_summary.svg" target="_blank" rel="noopener">View full-size plot.</a></figcaption>
+        </figure>
+        <details class="harness-details">
+          <summary>Per-task results and harness ablations</summary>
+          <div class="content has-text-justified">
+            <p>At each stage we compare <strong>Full harness (I+E), Interface only (I), Execution only (E), and No harness</strong>. Interface retains encapsulation and procedural knowledge; Execution retains closed-loop control, infrastructure, and feedback.</p>
+            <p>Across the three ablation tasks, the full-tool average is <strong>76.9</strong> with the full harness, <strong>59.3</strong> with Interface only, <strong>34.0</strong> with Execution only, and <strong>33.0</strong> without the harness.</p>
+          </div>
+          <figure class="image harness-figure">
+            <img src="./static/images/harness_scaling.png" alt="Four harness conditions across cut banana, rotate cube, and open cabinet, from S0 to S3" loading="lazy" width="1800" height="332">
+            <figcaption>Mean task progress for cut banana, rotate cube, and open cabinet as tool groups are added to Base CaP. The four conditions are Full harness (I+E), Interface only (I), Execution only (E), and No harness. Error bars show per-task standard errors, computed as sample SD divided by √n for each task–stage–condition cell. S0 uses the same five baseline trials per task for all four curves. <a href="./static/images/harness_scaling.png" target="_blank" rel="noopener">View full-size plot.</a></figcaption>
+          </figure>
+        </details>
+        <div class="content has-text-justified"><p><strong>A concrete replan iteration.</strong> On the whiteboard-erase task, the first generated <code>actor_code</code> grasps 1 cm too high. Using the post-execution image and robot state, MAESTRO revises <code>grasp_pos[2]</code>, and the retry succeeds.</p></div><div class="columns is-centered"><div class="column is-three-quarters"><figure class="image "><img src="./static/images/replan_figure.png" alt="Visual feedback and a one-line code correction after a failed eraser grasp" loading="lazy" width="1314" height="1262"><figcaption class="subtitle is-6 mt-2">One replan iteration: visual feedback lets the agent diagnose the grasp and revise the code.</figcaption></figure></div></div>
       </div>
     </div>
   </div>
